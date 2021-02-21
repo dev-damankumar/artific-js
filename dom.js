@@ -373,6 +373,18 @@ var DOMInstance = {
             console.error("argument must be an array")
         }
 
+    },
+    includeHTML:function(){
+        var includesHTML=[...document.querySelectorAll("include")]
+        includesHTML.forEach(v=>{
+            var src=v.dataset.src
+            fetch(src).then(res=>{
+                res.text().then(html=>{
+                    v.insertAdjacentHTML("afterend",html)
+                    v.remove()
+                })
+            })
+        })
     }
 }
 
