@@ -1,6 +1,8 @@
 const DSelect = (function () {
   var theme = ["theme-1", "theme-2", "theme-3", "theme-4", "theme-5", "default"]
   var styleView = ["style-1", "style-2", "style-3", "style-4", "style-5", "default"]
+  var multiple = false
+  var multipleArray = []
 
   function setAttributes(el) {
     var attrArray = [...el.attributes]
@@ -15,36 +17,93 @@ const DSelect = (function () {
         }
       }
     })
+    attributes=attributes.trim()
+    classNames=classNames.trim()
     return {attributes, classes: classNames}
   }
+
+  function getString (node) {
+    var div = document.createElement("div");
+    div.appendChild(node)
+    return div.innerHTML
+  }
+
   function makeOptions(el, beforeIcon, afterIcon) {
+    var beforeContent = beforeIcon
+    var afterContent = afterIcon
     let html = ""
     let firstValue = false
     let firstOptionDiv = null
     let firstOption = ""
     var options = [...el.options];
     var isDisabled = false
+    var labelIndex = 1
     options.forEach(option => {
       if (option.disabled) {
         isDisabled = true
+      }
+
+      if (option) {
+        let beforeIcon = option.getAttribute("before-content")
+        let afterIcon = option.getAttribute("after-content")
+        console.log(beforeIcon)
+        option.removeAttribute("before-content")
+        option.removeAttribute("after-content")
+
+        let beforeEL = getHTML(beforeIcon)
+        let afterEL = getHTML(afterIcon)
+
+        if (beforeIcon && beforeEL) {
+          console.log("bb",beforeEL)
+          beforeContent = getString(beforeEL)
+        }
+        if (afterIcon && afterIcon) {
+
+          afterContent = getString(afterEL)
+        }
+
+
+        if (beforeEL) {
+          if (beforeEL.children.length > 0) {
+            console.error(`"before-content" element should not have any descendent`)
+            beforeIcon = null
+            beforeContent = null
+          }
+        }
+        if (afterEL) {
+
+          if (afterEL.children.length > 0) {
+            console.error(`"after-content" element should not have any descendent`)
+            afterIcon = null
+            afterContent = null
+          }
+        }
       }
       var {attributes, classes} = setAttributes(option)
       if (option.value.trim() !== "") {
         if (!firstValue) {
           firstValue = true
           firstOptionDiv = true
-          firstOption = `${beforeIcon ? `<div class="before-icon">${beforeIcon}</div>` : ""} 
+          firstOption = `${beforeContent ? `<div class="multi-tag-wrap"> <div class="before-icon">${beforeContent}</div>` : ""} 
                             <span>${option.innerHTML}</span> 
-                            ${afterIcon ? `<div class="after-icon">${afterIcon}</div>` : ""} `
+                            ${afterContent ? `<div class="after-icon">${afterContent}</div></div>` : ""} `
+
         }
-        html += `<div class="option-div ${isDisabled ? "option-disabled" : "visible"} ${firstOptionDiv ? "option-selected" : ""} ${classes}" ${attributes}>
-                            ${beforeIcon ? `<div class="before-icon">${beforeIcon}</div>` : ""} 
+        if (option.parentElement.firstElementChild === option && option.parentElement.tagName.toUpperCase() === "OPTGROUP") {
+          html += `<div class="optgroup-div">${option.parentElement.label || `Option Group ${labelIndex++}`}</div> `
+
+        }
+
+        html += `<div class="option-div${isDisabled ? " option-disabled" : " visible"}${firstOptionDiv?`${multiple?"":" option-selected "}`:""} ${classes}"${attributes}>
+                            ${beforeContent ? `<div class="multi-tag-wrap"><div class="before-icon">${beforeContent}</div>` : ""} 
                             <span>${option.innerHTML}</span> 
-                            ${afterIcon ? `<div class="after-icon">${afterIcon}</div>` : ""} 
+                            ${afterContent ? `<div class="after-icon">${afterContent}</div></div>` : ""} 
                          </div>`
         firstOptionDiv = false
         isDisabled = false
       }
+      beforeContent = beforeIcon
+      afterContent = afterIcon
     })
     let optionsDiv = `<div class="option-div-parent">${html}</div>`
     if (!firstValue) {
@@ -52,11 +111,19 @@ const DSelect = (function () {
     }
     return {optionsDiv, firstOption}
   }
+
   function getHTML(str) {
     var div = document.createElement("div");
     div.innerHTML = str;
+    if(div.firstChild){
+      if(div.firstChild.tagName.toUpperCase()==="SCRIPT"){
+        return null
+      }
+    }
+
     return div.firstChild
   }
+
   function addStyleTheme(styleTheme) {
     var styleThemeClasses = ""
     if (styleTheme && typeof styleTheme === "object" && Object.keys(styleTheme).length > 0) {
@@ -87,37 +154,778 @@ const DSelect = (function () {
     this.selector = selector
     var currentTargetIndex = -1;
     var cursorDirection = null
+
+
     this.selectTags = [...document.querySelectorAll(this.selector)]
     this.select = function (styleTheme) {
       if (this.selectTags.length > 0) {
-        var style =`<style>
-:root{--theme-1-selected-bg:#ffeeeb;--theme-1-selected-color:#f9826c;--theme-1-cursor:#f9826c;--theme-1-input-border:#d7d7d7;--theme-1-input-bg:#ffffff;--theme-1-scroll:#f9826c;--theme-2-selected-bg:#3fb27f;--theme-2-selected-color:#ffffff;--theme-2-cursor:#33475b;--theme-2-input-border:#33475b;--theme-2-input-bg:#ffffff;--theme-2-scroll:#3fb27f;--theme-3-selected-bg:#21e6c1;--theme-3-selected-color:#ffffff;--theme-3-cursor:#1f4287;--theme-3-input-border:#1f4287;--theme-3-input-bg:#ffffff;--theme-3-scroll:#1f4287;--theme-4-selected-bg:#3d5af1;--theme-4-selected-color:#ffffff;--theme-4-cursor:#0e153a;--theme-4-input-border:#3d5af1;--theme-4-input-bg:#ffffff;--theme-4-scroll:#22d1ee;--theme-5-selected-bg:#fc85ae;--theme-5-selected-color:#ffffff;--theme-5-cursor:#303a52;--theme-5-input-border:#fc85ae;--theme-5-input-bg:#fbfbfb;--theme-5-scroll:#9e579d;--theme-default-selected-bg:#d0e2ff;--theme-default-selected-color:#5068a9;--theme-default-cursor:#5068a9;--theme-default-input-border:#b3cdf6;--theme-default-input-bg:#fafafa;--theme-default-scroll:#5068a9}@font-face{font-family:SegoeUI;src:local("Segoe UI"),url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2) format("woff2"),url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"),url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype");font-weight:400}.div-parent .option-div.option-disabled,.div-parent .option-div.option-disabled *{color:gray;cursor:not-allowed}.select-div,.select-div *{font-family:SegoeUI,sans-serif;color:#24292e;line-height:1.5;box-sizing:border-box;-webkit-transition:all .5s ease;transition:all .5s ease;outline:0!important}.option-div.visible.option-selected{background:#d0e2ff;color:#5068a9}.select-div{padding:5px 12px;border-radius:6px;width:100%;cursor:pointer;position:relative;background:#fff;min-width:120px;border:1px solid #dcdcdc;font-size:14px;}.select-div{padding-right:35px!important}span.select-span{white-space:nowrap;overflow:hidden;text-overflow:clip;position:relative;user-select:none}span.select-span .before-icon{margin-left:0}.div-parent{position:absolute;background:#fff;width:100%;height:auto;display:none;z-index:99;top:100%;left:0;border:1px solid #dcdcdc}.select-div.open{border-bottom-right-radius:0;border-bottom-left-radius:0}.div-parent .option-div{padding:5px 10px;user-select:none}.active{display:block}.option-div:hover{background:#f1f1f1}.select-div:before{content:"";position:absolute;transition:all .5s ease;top:50%;right:9px;width:1.5px;height:8px;background:#24292e;transform:translate(-7px,-50%) rotate(45deg)}.select-div:after{content:"";position:absolute;transition:all .5s ease;top:50%;right:5px;width:1.5px;height:8px;background:#24292e;transform:translate(-16px,-50%) rotate(-45deg)}.select-div.open:before{content:"";position:absolute;transition:all .5s ease;top:50%;right:9px;width:1.5px;height:8px;background:#24292e;transform:translate(-7px,-50%) rotate(134deg)}.select-div.open:after{content:"";position:absolute;transition:all .5s ease;top:50%;right:5px;width:1.5px;height:8px;background:#24292e;transform:translate(-16px,-50%) rotate(-133deg)}input.search-div{width:calc(100% - 10px);position:relative;padding:5px 10px;border:1px solid rgb(179 205 246);background:#fafafa;margin:5px;text-transform:initial;border-radius:5px}.option-div-parent{max-height:174px;overflow-y:auto;overflow-x:hidden;height:auto}.select-div select{display:none}.option-div.visible.selected{background:#5068a9;color:#fff}.option-div.visible.selected *{color:#fff}.option-div-parent::-webkit-scrollbar{width:5px;border-radius:50px;cursor:alias}.option-div-parent::-webkit-scrollbar-thumb{background:#5068a9;border-radius:50px;cursor:alias}.option-div-parent::-webkit-scrollbar-track{background:#fafafa;cursor:alias}.option-div{display:flex;align-items:center;justify-content:flex-start}.before-icon{display:flex;align-items:center;margin-right:8px;margin-left:-3px}.after-icon{display:flex;align-items:center;margin-left:auto}span.select-span span{margin-right:8px}.option-div span{margin-right:8px}.after-icon>img,.before-icon>img{width:auto;height:16px;max-width:16px;border-radius:50px}.select-par{display:flex;flex-wrap:wrap;justify-content:space-between}@media screen and (max-width:600px){.select-div{width:100%;flex:0 0 100%}.select-div{border:1px solid #dcdcdc;padding:7px 10px;border-radius:3px;cursor:pointer;position:relative;margin-bottom:30%}}.style-1 .div-parent.active{box-shadow:0 3px 6px -4px rgb(0 0 0 / 12%),0 6px 16px 0 rgb(0 0 0 / 8%),0 9px 28px 8px rgb(0 0 0 / 5%);margin-top:15px;border:none}.style-1 input.search-div{border:1px solid rgb(215 215 215);background:#fff;border-radius:0}.style-1.select-div{border-radius:0;border:1px solid #f1f1f1}.style-1.select-div.open:after,.style-1.select-div.open:before,.style-1.select-div:after,.style-1.select-div:before{background:#dcdcdc}.style-1 .option-div:hover{background:#f1f1f1}.style-1 .div-parent.active:before{content:"";top:-2px;right:13px;width:8px;height:8px;border-radius:0;background:#fff;box-shadow:-3px -3px 5px rgb(82 95 127 / 4%);position:absolute;transform:rotate(45deg) translateX(-50%)}.theme-1 .option-div.visible.option-selected{background:var(--theme-1-selected-bg);color:var(--theme-1-selected-color)}.theme-1 input.search-div{border:1px solid var(--theme-1-input-border);background:var(--theme-2-input-bg)}.theme-1 .option-div.visible.selected{background:var(--theme-1-cursor);color:#fff}.theme-1 .option-div.visible.selected *{color:#fff}.theme-1 .option-div-parent::-webkit-scrollbar-thumb{background:var(--theme-1-scroll);border-radius:50px;cursor:alias}.style-1 .option-div-parent::-webkit-scrollbar-thumb{border-radius:50px;cursor:alias}.style-1 .option-div-parent::-webkit-scrollbar-track{background:#f1f1f1}.style-2 .div-parent.active{box-shadow:0 3px 6px -4px rgb(0 0 0 / 12%),0 6px 16px 0 rgb(0 0 0 / 8%),0 9px 28px 8px rgb(0 0 0 / 5%);margin-top:15px;border:none;border-radius:10px;padding:5px 0}.style-2 input.search-div{border-radius:5px}.theme-2 input.search-div{border:1px solid var(--theme-2-input-border);background:var(--theme-2-input-bg)}.style-2.select-div{border-radius:10px;border:1px solid #f1f1f1;box-shadow:0 1px 8px 1px rgb(0 0 0 / 9%);min-width:130px;padding:8px 12px}.theme-2.select-div,.theme-2.select-div *{color:#33475b}.style-2.select-div.open{border-bottom-right-radius:10px;border-bottom-left-radius:10px}.style-2.select-div.open:after,.style-2.select-div.open:before,.style-2.select-div:after,.style-2.select-div:before{background:#dcdcdc}.style-2 .option-div:hover{background:#f1f1f1}.style-2 .div-parent.active:before{content:"";top:-2px;right:13px;width:8px;height:8px;border-radius:0;background:#fff;box-shadow:-3px -3px 5px rgb(82 95 127 / 4%);position:absolute;transform:rotate(45deg) translateX(-50%)}span.select-span{display:flex;flex-wrap:nowrap;align-items:center}.theme-2 .option-div.visible.option-selected{background:var(--theme-2-selected-bg);color:var(--theme-2-selected-color)}.theme-2 .option-div.visible.option-selected *{color:var(--theme-2-selected-color)}.theme-2 .option-div.visible.selected{background:var(--theme-2-cursor);color:#fff}.theme-2 .option-div.visible.selected *{color:#fff}.theme-2 .option-div-parent::-webkit-scrollbar-thumb{background:var(--theme-2-scroll);border-radius:50px;cursor:alias}.style-2 .option-div-parent::-webkit-scrollbar-track{background:#f1f1f1}.style-2 .div-parent.active{box-shadow:0 3px 6px -4px rgb(0 0 0 / 12%),0 6px 16px 0 rgb(0 0 0 / 8%),0 9px 28px 8px rgb(0 0 0 / 5%);margin-top:15px;border:none;border-radius:10px;padding:5px 0}.style-2 input.search-div{border-radius:5px}.theme-2 input.search-div{border:1px solid var(--theme-2-input-border);background:var(--theme-2-input-bg)}.style-2.select-div{border-radius:10px;border:1px solid #f1f1f1;box-shadow:0 1px 8px 1px rgb(0 0 0 / 9%);min-width:130px;padding:8px 12px}.theme-2.select-div,.theme-2.select-div *{color:#33475b}.style-2.select-div.open{border-bottom-right-radius:10px;border-bottom-left-radius:10px}.style-2.select-div.open:after,.style-2.select-div.open:before,.style-2.select-div:after,.style-2.select-div:before{background:#dcdcdc}.style-2 .option-div:hover{background:#f1f1f1}.style-2 .div-parent.active:before{content:"";top:-2px;right:13px;width:8px;height:8px;border-radius:0;background:#fff;box-shadow:-3px -3px 5px rgb(82 95 127 / 4%);position:absolute;transform:rotate(45deg) translateX(-50%)}.style-3 .div-parent.active{box-shadow:0 1px 6px -4px rgb(0 0 0 / 12%),0 9px 16px 0 rgb(0 0 0 / 8%),0 18px 28px 8px rgb(0 0 0 / 5%);margin-top:0;border:none;border-radius:0 0 10px 10px;padding:5px 0;border-top:1px solid #efefef}.style-3.select-div.open{border-bottom-right-radius:0;border-bottom-left-radius:0}.style-3 input.search-div{border-radius:5px}.theme-3 input.search-div{border:1px solid var(--theme-3-input-border);background:var(--theme-3-input-bg)}.style-3.select-div{border-radius:10px;border:1px solid #f1f1f1;box-shadow:0 1px 8px 1px rgb(0 0 0 / 9%);min-width:130px;padding:8px 12px}.theme-3.select-div,.theme-3.select-div *{color:#0e153a}.style-3.select-div.open:after,.style-3.select-div.open:before,.style-3.select-div:after,.style-3.select-div:before{background:#dcdcdc}.style-3 .option-div:hover{background:#f1f1f1}.theme-3 .option-div.visible.option-selected{background:var(--theme-3-selected-bg);color:var(--theme-3-selected-color)}.theme-3 .option-div.visible.selected{background:var(--theme-3-cursor);color:#fff}.theme-3 .option-div.visible.selected *{color:#fff}.theme-3 .option-div-parent::-webkit-scrollbar-thumb{background:var(--theme-3-scroll);border-radius:50px;cursor:alias}.theme-3 .option-div-parent::-webkit-scrollbar-track{background:#f1f1f1}.style-4 .div-parent.active{box-shadow:0 1px 6px -4px rgb(0 0 0 / 12%),0 9px 16px 0 rgb(0 0 0 / 8%),0 18px 28px 8px rgb(0 0 0 / 5%);margin-top:15px;border:none;border-radius:0;padding:5px 0}.style-4 input.search-div{border-radius:0}.style-4 .div-parent.active:before{content:"";top:-2px;right:13px;width:8px;height:8px;border-radius:0;background:#fff;box-shadow:-3px -3px 5px rgb(82 95 127 / 4%);position:absolute;transform:rotate(45deg) translateX(-50%)}.theme-4 input.search-div{border:1px solid var(--theme-4-input-border);background:var(--theme-4-input-bg)}.style-4.select-div.open{border-bottom-right-radius:0;border-bottom-left-radius:0}.style-4.select-div{border-radius:0;border:1px solid #f1f1f1;box-shadow:0 1px 8px 1px rgb(0 0 0 / 9%);min-width:130px;padding:8px 12px}.theme-4.select-div,.theme-4.select-div *{color:#071e3d}.style-4.select-div.open:after,.style-4.select-div.open:before,.style-4.select-div:after,.style-4.select-div:before{background:#dcdcdc}.theme-4 .option-div:hover{background:#f1f1f1}.theme-4 .option-div.visible.option-selected{background:var(--theme-4-selected-bg);color:var(--theme-4-selected-color)}.theme-4 .option-div.visible.option-selected *{color:var(--theme-4-selected-color)}.theme-4 .option-div.visible.selected{background:var(--theme-4-cursor);color:#fff}.theme-4 .option-div.visible.selected *{color:#fff}.theme-4 .option-div-parent::-webkit-scrollbar-thumb{background:var(--theme-4-scroll);border-radius:50px;cursor:alias}.theme-4 .option-div-parent::-webkit-scrollbar-track{background:#f1f1f1}.style-5 .div-parent.active:before{content:"";top:-2px;right:13px;width:8px;height:8px;border-radius:0;background:#fff;box-shadow:-3px -3px 5px rgb(82 95 127 / 4%);position:absolute;transform:rotate(45deg) translateX(-50%);border:1px solid #f1f1f1;border-bottom:0;border-right:0}.style-5 .div-parent.active{box-shadow:none;margin-top:15px;border:1px solid #f1f1f1}.style-5.select-div{border-radius:0;border:1px solid #f1f1f1}.style-5.select-div.open:after,.style-5.select-div.open:before,.style-5.select-div:after,.style-5.select-div:before{background:#dcdcdc}.style-5 input.search-div{border-radius:0}.theme-5 .option-div-parent::-webkit-scrollbar-thumb{background:var(--theme-5-scroll);border-radius:50px;cursor:alias}.theme-5 input.search-div{border:1px solid var(--theme-5-input-border);background:var(--theme-5-input-bg)}.theme-5 .option-div.visible.option-selected{background:var(--theme-5-selected-bg);color:var(--theme-5-selected-color)}.theme-5 .option-div.visible.option-selected *{color:var(--theme-5-selected-color)}.theme-5 .option-div.visible.selected{background:var(--theme-5-cursor);color:#fff}.theme-5 .option-div.visible.selected *{color:#fff}
+        var style = `<style>
+:root {
+    --theme-1-selected-bg: #ffeeeb;
+    --theme-1-selected-color: #f9826c;
+    --theme-1-cursor: #f9826c;
+    --theme-1-input-border: #d7d7d7;
+    --theme-1-input-bg: #ffffff;
+    --theme-1-scroll: #f9826c;
+    --theme-2-selected-bg: #3fb27f;
+    --theme-2-selected-color: #ffffff;
+    --theme-2-cursor: #33475b;
+    --theme-2-input-border: #33475b;
+    --theme-2-input-bg: #ffffff;
+    --theme-2-scroll: #3fb27f;
+    --theme-3-selected-bg: #21e6c1;
+    --theme-3-selected-color: #ffffff;
+    --theme-3-cursor: #1f4287;
+    --theme-3-input-border: #1f4287;
+    --theme-3-input-bg: #ffffff;
+    --theme-3-scroll: #1f4287;
+    --theme-4-selected-bg: #3d5af1;
+    --theme-4-selected-color: #ffffff;
+    --theme-4-cursor: #0e153a;
+    --theme-4-input-border: #3d5af1;
+    --theme-4-input-bg: #ffffff;
+    --theme-4-scroll: #22d1ee;
+    --theme-5-selected-bg: #fc85ae;
+    --theme-5-selected-color: #ffffff;
+    --theme-5-cursor: #303a52;
+    --theme-5-input-border: #fc85ae;
+    --theme-5-input-bg: #fbfbfb;
+    --theme-5-scroll: #9e579d;
+    --theme-default-selected-bg: #d0e2ff;
+    --theme-default-selected-color: #5068a9;
+    --theme-default-cursor: #5068a9;
+    --theme-default-input-border: #b3cdf6;
+    --theme-default-input-bg: #fafafa;
+    --theme-default-scroll: #5068a9
+}
+
+@font-face {
+    font-family: SegoeUI Bold;
+    src: local("Segoe UI Bold"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.ttf) format("truetype");
+    font-weight: 600
+}
+
+@font-face {
+    font-family: SegoeUI Semibold;
+    src: local("Segoe UI Semibold"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.ttf) format("truetype");
+    font-weight: 700
+}
+@font-face {
+    font-family: SegoeUI;
+    src: local("Segoe UI"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype");
+    font-weight: 400
+}
+
+.div-parent .option-div.option-disabled, .div-parent .option-div.option-disabled * {
+    color: gray;
+    cursor: not-allowed
+}
+
+
+.select-div, .select-div * {
+    font-family: SegoeUI, sans-serif;
+    color: #24292e;
+    line-height: 1.5;
+    box-sizing: border-box;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+    outline: 0 !important
+}
+
+.option-div.visible.option-selected,.option-div.visible.option-selected-multi {
+    background: #d0e2ff;
+    color: #5068a9
+}
+
+.optgroup-div {
+    font-size: 14px;
+    font-family: SegoeUI Semibold;
+    padding: 5px 10px;
+    color: #5068a9;
+}
+.optgroup-div ~ .option-div {
+    padding-left: 20px !important;
+}
+.select-div {
+    padding: 5px 12px;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    background: #fff;
+    min-width: 120px;
+    border: 1px solid #dcdcdc;
+    font-size: 14px;
+    max-width: 400px;
+}
+
+.select-div {
+    padding-right: 35px !important
+}
+
+span.select-span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    position: relative;
+    user-select: none
+}
+
+span.select-span .before-icon {
+    margin-left: 0
+}
+
+.div-parent {
+    position: absolute;
+    background: #fff;
+    width: 100%;
+    height: auto;
+    display: none;
+    z-index: 9999;
+    top: 100%;
+    left: 0;
+    border: 1px solid #dcdcdc
+}
+
+.select-div.open {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0
+}
+
+.div-parent .option-div {
+    padding: 5px 10px;
+    user-select: none
+}
+
+.active {
+    display: block
+}
+
+.option-div:hover {
+    background: #f1f1f1
+}
+
+.select-div:before {
+    content: "";
+    position: absolute;
+    transition: all .5s ease;
+    top: 50%;
+    right: 9px;
+    width: 1.5px;
+    height: 8px;
+    background: #24292e;
+    transform: translate(-7px, -50%) rotate(45deg)
+}
+
+.select-div:after {
+    content: "";
+    position: absolute;
+    transition: all .5s ease;
+    top: 50%;
+    right: 5px;
+    width: 1.5px;
+    height: 8px;
+    background: #24292e;
+    transform: translate(-16px, -50%) rotate(-45deg)
+}
+
+.select-div.open:before {
+    content: "";
+    position: absolute;
+    transition: all .5s ease;
+    top: 50%;
+    right: 9px;
+    width: 1.5px;
+    height: 8px;
+    background: #24292e;
+    transform: translate(-7px, -50%) rotate(134deg)
+}
+
+.select-div.open:after {
+    content: "";
+    position: absolute;
+    transition: all .5s ease;
+    top: 50%;
+    right: 5px;
+    width: 1.5px;
+    height: 8px;
+    background: #24292e;
+    transform: translate(-16px, -50%) rotate(-133deg)
+}
+
+input.search-div {
+    width: calc(100% - 10px);
+    position: relative;
+    padding: 5px 10px;
+    border: 1px solid rgb(179 205 246);
+    background: #fafafa;
+    margin: 5px;
+    text-transform: initial;
+    border-radius: 5px
+}
+
+.option-div-parent {
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto
+}
+
+.select-div select {
+    display: none
+}
+
+.option-div.visible.selected {
+    background: #5068a9;
+    color: #fff
+}
+
+.option-div.visible.selected * {
+    color: #fff
+}
+
+.option-div-parent::-webkit-scrollbar {
+    width: 5px;
+    border-radius: 50px;
+    cursor: alias
+}
+
+.option-div-parent::-webkit-scrollbar-thumb {
+    background: #5068a9;
+    border-radius: 50px;
+    cursor: alias
+}
+
+.option-div-parent::-webkit-scrollbar-track {
+    background: #fafafa;
+    cursor: alias
+}
+
+.multi-tag-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+span.select-span .multi-tag-wrap {
+    margin-right: 10px;
+    border-radius: 5px;
+    background: #efefef;
+    padding: 2px 6px;
+    font-size: 13px;
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+.before-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+    margin-left: -3px
+}
+
+.after-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto
+}
+
+span.select-span span {
+    margin-right: 8px
+}
+
+.option-div span {
+    margin-right: 8px
+}
+
+.after-icon > img, .before-icon > img {
+    width: auto;
+    height: 16px;
+    max-width: 16px;
+    border-radius: 50px
+}
+
+.select-par {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between
+}
+
+@media screen and (max-width: 600px) {
+    .select-div {
+        width: 100%;
+        flex: 0 0 100%
+    }
+
+    .select-div {
+        border: 1px solid #dcdcdc;
+        padding: 7px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        position: relative;
+        margin-bottom: 30%
+    }
+}
+
+.style-1 .div-parent.active {
+    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+    margin-top: 15px;
+    border: none
+}
+
+.style-1 input.search-div {
+    border: 1px solid rgb(215 215 215);
+    background: #fff;
+    border-radius: 0
+}
+
+.style-1.select-div {
+    border-radius: 0;
+    border: 1px solid #f1f1f1
+}
+
+.style-1.select-div.open:after, .style-1.select-div.open:before, .style-1.select-div:after, .style-1.select-div:before {
+    background: #dcdcdc
+}
+
+.style-1 .option-div:hover {
+    background: #f1f1f1
+}
+
+.style-1 .div-parent.active:before {
+    content: "";
+    top: -2px;
+    right: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: -3px -3px 5px rgb(82 95 127 / 4%);
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%)
+}
+
+.theme-1 .option-div.visible.option-selected,.theme-1 .option-div.visible.option-selected-multi {
+    background: var(--theme-1-selected-bg);
+    color: var(--theme-1-selected-color)
+}
+
+.theme-1 input.search-div {
+    border: 1px solid var(--theme-1-input-border);
+    background: var(--theme-2-input-bg)
+}
+
+.theme-1 .option-div.visible.selected {
+    background: var(--theme-1-cursor);
+    color: #fff
+}
+
+.theme-1 .option-div.visible.selected * {
+    color: #fff
+}
+
+.theme-1 .option-div-parent::-webkit-scrollbar-thumb {
+    background: var(--theme-1-scroll);
+    border-radius: 50px;
+    cursor: alias
+}
+
+.style-1 .option-div-parent::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    cursor: alias
+}
+
+.style-1 .option-div-parent::-webkit-scrollbar-track {
+    background: #f1f1f1
+}
+
+.style-2 .div-parent.active {
+    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 0
+}
+
+.style-2 input.search-div {
+    border-radius: 5px
+}
+
+.theme-2 input.search-div {
+    border: 1px solid var(--theme-2-input-border);
+    background: var(--theme-2-input-bg)
+}
+
+.style-2.select-div {
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+    box-shadow: 0 1px 8px 1px rgb(0 0 0 / 9%);
+    min-width: 130px;
+    padding: 8px 12px
+}
+
+.theme-2.select-div, .theme-2.select-div * {
+    color: #33475b
+}
+
+.style-2.select-div.open {
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px
+}
+
+.style-2.select-div.open:after, .style-2.select-div.open:before, .style-2.select-div:after, .style-2.select-div:before {
+    background: #dcdcdc
+}
+
+.style-2 .option-div:hover {
+    background: #f1f1f1
+}
+
+.style-2 .div-parent.active:before {
+    content: "";
+    top: -2px;
+    right: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: -3px -3px 5px rgb(82 95 127 / 4%);
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%)
+}
+
+span.select-span {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.theme-2 .option-div.visible.option-selected,.theme-2 .option-div.visible.option-selected-multi {
+    background: var(--theme-2-selected-bg);
+    color: var(--theme-2-selected-color)
+}
+
+.theme-2 .option-div.visible.option-selected *,.theme-2 .option-div.visible.option-selected-multi * {
+    color: var(--theme-2-selected-color)
+}
+
+.theme-2 .option-div.visible.selected {
+    background: var(--theme-2-cursor);
+    color: #fff
+}
+
+.theme-2 .option-div.visible.selected * {
+    color: #fff
+}
+
+.theme-2 .option-div-parent::-webkit-scrollbar-thumb {
+    background: var(--theme-2-scroll);
+    border-radius: 50px;
+    cursor: alias
+}
+
+.style-2 .option-div-parent::-webkit-scrollbar-track {
+    background: #f1f1f1
+}
+
+.style-2 .div-parent.active {
+    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 0
+}
+
+.style-2 input.search-div {
+    border-radius: 5px
+}
+
+.theme-2 input.search-div {
+    border: 1px solid var(--theme-2-input-border);
+    background: var(--theme-2-input-bg)
+}
+
+.style-2.select-div {
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+    box-shadow: 0 1px 8px 1px rgb(0 0 0 / 9%);
+    min-width: 130px;
+    padding: 8px 12px
+}
+
+.theme-2.select-div, .theme-2.select-div * {
+    color: #33475b
+}
+
+.style-2.select-div.open {
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px
+}
+
+.style-2.select-div.open:after, .style-2.select-div.open:before, .style-2.select-div:after, .style-2.select-div:before {
+    background: #dcdcdc
+}
+
+.style-2 .option-div:hover {
+    background: #f1f1f1
+}
+
+.style-2 .div-parent.active:before {
+    content: "";
+    top: -2px;
+    right: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: -3px -3px 5px rgb(82 95 127 / 4%);
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%)
+}
+
+.style-3 .div-parent.active {
+    box-shadow: 0 1px 6px -4px rgb(0 0 0 / 12%), 0 9px 16px 0 rgb(0 0 0 / 8%), 0 18px 28px 8px rgb(0 0 0 / 5%);
+    margin-top: 0;
+    border: none;
+    border-radius: 0 0 10px 10px;
+    padding: 5px 0;
+    border-top: 1px solid #efefef
+}
+
+.style-3.select-div.open {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0
+}
+
+.style-3 input.search-div {
+    border-radius: 5px
+}
+
+.theme-3 input.search-div {
+    border: 1px solid var(--theme-3-input-border);
+    background: var(--theme-3-input-bg)
+}
+
+.style-3.select-div {
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+    box-shadow: 0 1px 8px 1px rgb(0 0 0 / 9%);
+    min-width: 130px;
+    padding: 8px 12px
+}
+
+.theme-3.select-div, .theme-3.select-div * {
+    color: #0e153a
+}
+
+.style-3.select-div.open:after, .style-3.select-div.open:before, .style-3.select-div:after, .style-3.select-div:before {
+    background: #dcdcdc
+}
+
+.style-3 .option-div:hover {
+    background: #f1f1f1
+}
+
+.theme-3 .option-div.visible.option-selected ,.theme-3 .option-div.visible.option-selected-multi {
+    background: var(--theme-3-selected-bg);
+    color: var(--theme-3-selected-color)
+}
+
+.theme-3 .option-div.visible.selected {
+    background: var(--theme-3-cursor);
+    color: #fff
+}
+
+.theme-3 .option-div.visible.selected * {
+    color: #fff
+}
+
+.theme-3 .option-div-parent::-webkit-scrollbar-thumb {
+    background: var(--theme-3-scroll);
+    border-radius: 50px;
+    cursor: alias
+}
+
+.theme-3 .option-div-parent::-webkit-scrollbar-track {
+    background: #f1f1f1
+}
+
+.style-4 .div-parent.active {
+    box-shadow: 0 1px 6px -4px rgb(0 0 0 / 12%), 0 9px 16px 0 rgb(0 0 0 / 8%), 0 18px 28px 8px rgb(0 0 0 / 5%);
+    margin-top: 15px;
+    border: none;
+    border-radius: 0;
+    padding: 5px 0
+}
+
+.style-4 input.search-div {
+    border-radius: 0
+}
+
+.style-4 .div-parent.active:before {
+    content: "";
+    top: -2px;
+    right: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: -3px -3px 5px rgb(82 95 127 / 4%);
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%)
+}
+
+.theme-4 input.search-div {
+    border: 1px solid var(--theme-4-input-border);
+    background: var(--theme-4-input-bg)
+}
+
+.style-4.select-div.open {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0
+}
+
+.style-4.select-div {
+    border-radius: 0;
+    border: 1px solid #f1f1f1;
+    box-shadow: 0 1px 8px 1px rgb(0 0 0 / 9%);
+    min-width: 130px;
+    padding: 8px 12px
+}
+
+.theme-4.select-div, .theme-4.select-div * {
+    color: #071e3d
+}
+
+.style-4.select-div.open:after, .style-4.select-div.open:before, .style-4.select-div:after, .style-4.select-div:before {
+    background: #dcdcdc
+}
+
+.theme-4 .option-div:hover {
+    background: #f1f1f1
+}
+
+.theme-4 .option-div.visible.option-selected,.theme-4 .option-div.visible.option-selected-multi {
+    background: var(--theme-4-selected-bg);
+    color: var(--theme-4-selected-color)
+}
+
+.theme-4 .option-div.visible.option-selected *,.theme-4 .option-div.visible.option-selected-multi * {
+    color: var(--theme-4-selected-color)
+}
+
+.theme-4 .option-div.visible.selected {
+    background: var(--theme-4-cursor);
+    color: #fff
+}
+
+.theme-4 .option-div.visible.selected * {
+    color: #fff
+}
+
+.theme-4 .option-div-parent::-webkit-scrollbar-thumb {
+    background: var(--theme-4-scroll);
+    border-radius: 50px;
+    cursor: alias
+}
+
+.theme-4 .option-div-parent::-webkit-scrollbar-track {
+    background: #f1f1f1
+}
+
+.style-5 .div-parent.active:before {
+    content: "";
+    top: -2px;
+    right: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: -3px -3px 5px rgb(82 95 127 / 4%);
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%);
+    border: 1px solid #f1f1f1;
+    border-bottom: 0;
+    border-right: 0
+}
+
+.style-5 .div-parent.active {
+    box-shadow: none;
+    margin-top: 15px;
+    border: 1px solid #f1f1f1
+}
+
+.style-5.select-div {
+    border-radius: 0;
+    border: 1px solid #f1f1f1
+}
+
+.style-5.select-div.open:after, .style-5.select-div.open:before, .style-5.select-div:after, .style-5.select-div:before {
+    background: #dcdcdc
+}
+
+.style-5 input.search-div {
+    border-radius: 0
+}
+
+.theme-5 .option-div-parent::-webkit-scrollbar-thumb {
+    background: var(--theme-5-scroll);
+    border-radius: 50px;
+    cursor: alias
+}
+
+.theme-5 input.search-div {
+    border: 1px solid var(--theme-5-input-border);
+    background: var(--theme-5-input-bg)
+}
+
+.theme-5 .option-div.visible.option-selected,.theme-5 .option-div.visible.option-selected-multi {
+    background: var(--theme-5-selected-bg);
+    color: var(--theme-5-selected-color)
+}
+
+.theme-5 .option-div.visible.option-selected *,.theme-5 .option-div.visible.option-selected-multi * {
+    color: var(--theme-5-selected-color)
+}
+
+.theme-5 .option-div.visible.selected {
+    background: var(--theme-5-cursor);
+    color: #fff
+}
+
+.theme-5 .option-div.visible.selected * {
+    color: #fff
+}
 </style>`
+
         var prevTargetIndex = 0;
         var hoverEvent = false
         var newSelectHolder = []
         document.head.innerHTML += style
 
         this.selectTags.forEach(selectTag => {
+          multiple = selectTag.hasAttribute("multiple")
+
           var styleThemeClasses = addStyleTheme(styleTheme)
           var beforeIcon = selectTag.getAttribute("before-content")
           var afterIcon = selectTag.getAttribute("after-content")
           selectTag.removeAttribute("before-content")
           selectTag.removeAttribute("after-content")
 
-          var beforeEL=getHTML(beforeIcon)
-          var afterEL=getHTML(afterIcon)
+          var beforeEL = getHTML(beforeIcon)
+          var afterEL = getHTML(afterIcon)
 
-          if(beforeEL){
-            if(beforeEL.children.length>0){
+          if (beforeEL) {
+            if (beforeEL.children.length > 0) {
               console.error(`"before-content" element should not have any descendent`)
-              beforeIcon=null
+              beforeIcon = null
             }
           }
-          if(afterEL){
-            if(afterEL.children.length>0){
+          if (afterEL) {
+            if (afterEL.children.length > 0) {
               console.error(`"after-content" element should not have any descendent`)
-              afterIcon=null
+              afterIcon = null
             }
           }
           var {optionsDiv, firstOption} = makeOptions(selectTag, beforeIcon, afterIcon)
@@ -135,10 +943,29 @@ const DSelect = (function () {
             selectTag.style.left = "-100px"
             selectTag.style.position = "relative"
 
-            selectDiv.innerHTML += "<span class='select-span'>" + firstOption + "</span>"
+            selectDiv.innerHTML += "<span class='select-span'>" + `${multiple ? "Choose Option" : firstOption}` + "</span>"
+
             var divParent = `<div class="div-parent"><input class="search-div">${optionsDiv}</div>`
             selectDiv.innerHTML += divParent
-            newSelectHolder.push(selectDiv.querySelector("select"))
+            var newSelect = selectDiv.querySelector("select")
+            newSelect.addEventListener("change", function (e) {
+
+              if (this.options.length > 0) {
+                var options = [...this.options]
+                options.forEach((v, i) => {
+                  if (v.selected === true) {
+                    let selectedIndex = i
+                    console.log("index", selectedIndex)
+                    var optionParent = selectDiv.querySelector(".option-div-parent")
+                    console.log(optionParent.querySelectorAll(".option-div"))
+                    optionParent.querySelectorAll(".option-div")[selectedIndex].click()
+                  }
+                })
+              }
+
+
+            })
+            newSelectHolder.push(newSelect)
           }
         })
 
@@ -168,9 +995,10 @@ const DSelect = (function () {
           }
         }
 
-        document.body.addEventListener("click", function (e) {
+        window.addEventListener("click", function (e) {
           let selectDiv = e.target.closest(".select-div") || e.target.classList.contains("select-div")
           if (e.target.tagName.toUpperCase() !== "SELECT") {
+
             if ((e.target.closest(".select-div") || e.target.classList.contains("select-div"))
                 && !e.target.closest(".div-parent") && !e.target.closest("option-div-parent")
             ) {
@@ -187,7 +1015,9 @@ const DSelect = (function () {
             }
 
             if (e.target.closest(".option-div") || e.target.classList.contains("option-div")) {
+
               var selectedOption = selectDiv.querySelector(".option-selected")
+              multiple = selectDiv.querySelector("select").hasAttribute("multiple")
               if (selectedOption) {
                 selectedOption.classList.remove("option-selected")
               }
@@ -196,11 +1026,58 @@ const DSelect = (function () {
                 var option = e.target.closest(".option-div") || e.target.classList.contains("option-div")
 
                 if (!option.hasAttribute("disabled")) {
-                  option.classList.add("option-selected")
-                  var optionSelectedIndex = Array.prototype.indexOf.call([...option.parentElement.children], option)
-                  option.parentElement.parentElement.previousElementSibling.innerHTML = option.innerHTML
-                  selectDiv.querySelector("select").selectedIndex = optionSelectedIndex
-                  removePreviousActive(false)
+                  if (!multiple) {
+                    option.classList.add("option-selected")
+                  }
+
+                  var optionSelectedIndex = Array.prototype.indexOf.call([...option.parentElement.querySelectorAll(".option-div")], option)
+
+
+                  if (multiple) {
+
+                    console.log(multipleArray.length)
+                    var text = option.innerText.trim()
+                    if (!multipleArray.includes(text)) {
+                      multipleArray.push(text)
+                      option.classList.add("option-selected-multi")
+                      if (multiple) {
+                        selectDiv.querySelector("select").options[optionSelectedIndex].selected = true
+                      }
+                      if (multipleArray.length === 1) {
+                        option.parentElement.parentElement.previousElementSibling.innerHTML = option.innerHTML
+                      } else {
+                        option.parentElement.parentElement.previousElementSibling.innerHTML += option.innerHTML
+                      }
+
+                    } else {
+
+                      var index = multipleArray.indexOf(text)
+                      if (index > -1) {
+                        multipleArray.splice(index, 1);
+                      }
+                      option.classList.remove("option-selected-multi")
+                      option.parentElement.parentElement.previousElementSibling.children[index].remove()
+                      if (multiple) {
+                        selectDiv.querySelector("select").options[optionSelectedIndex].selected = false
+                      }
+                      if (multipleArray.length === 0) {
+                        console.log(multiple)
+                        option.parentElement.parentElement.previousElementSibling.innerHTML = "<span>Choose Option</span>"
+                      }
+                    }
+
+                  } else {
+                    option.parentElement.parentElement.previousElementSibling.innerHTML = option.innerHTML
+                  }
+
+                  if (!multiple) {
+                    console.log("lo", optionSelectedIndex)
+                    selectDiv.querySelector("select").selectedIndex = optionSelectedIndex
+                  }
+
+                  if (!multiple) {
+                    removePreviousActive(false)
+                  }
                 }
               }
               var selectedCursor = selectDiv.querySelector(".selected")
@@ -226,20 +1103,23 @@ const DSelect = (function () {
             }
 
             for (var j = 0; j < searchList.length; j++) {
-              var output_div = e.target.nextElementSibling.children
-              if (searchList[j].toUpperCase().indexOf(searchValue.toUpperCase()) > -1 && searchList[j].toUpperCase().indexOf(
-                  searchValue.toUpperCase()) === 0) {
-                output_div[j].style.display = "block"
-                if (!output_div[j].hasAttribute("disabled")) {
-                  output_div[j].classList.add("visible")
+              if (e.target.classList.contains("search-div")) {
+                var output_div = e.target.nextElementSibling.querySelectorAll(".option-div")
+                if (searchList[j].toUpperCase().indexOf(searchValue.toUpperCase()) > -1 && searchList[j].toUpperCase().indexOf(
+                    searchValue.toUpperCase()) === 0) {
+                  output_div[j].style.display = "block"
+                  if (!output_div[j].hasAttribute("disabled")) {
+                    output_div[j].classList.add("visible")
+                  }
+                  output_div[j].classList.remove("not-visible")
+                } else {
+                  output_div[j].classList.add("not-visible")
+                  output_div[j].classList.remove("visible")
+                  output_div[j].style.display = "none"
                 }
-                output_div[j].classList.remove("not-visible")
-              } else {
-                output_div[j].classList.add("not-visible")
-                output_div[j].classList.remove("visible")
-                output_div[j].style.display = "none"
+                output_div[j].classList.remove("selected")
               }
-              output_div[j].classList.remove("selected")
+
             }
 
           })
