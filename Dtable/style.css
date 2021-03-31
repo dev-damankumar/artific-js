@@ -1,0 +1,786 @@
+
+:root {
+    --color1: #f9826c;
+    --color2: #fafbfc;
+    --color3: #1b1f2326;
+}
+
+@font-face {
+    font-family: SegoeUI Light;
+    src: local("Segoe UI Light"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.ttf) format("truetype");
+    font-weight: 100
+}
+
+@font-face {
+    font-family: SegoeUI Semilight;
+    src: local("Segoe UI Semilight"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.ttf) format("truetype");
+    font-weight: 200
+}
+
+@font-face {
+    font-family: SegoeUI;
+    src: local("Segoe UI"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype");
+    font-weight: 400
+}
+
+@font-face {
+    font-family: SegoeUI Bold;
+    src: local("Segoe UI Bold"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.ttf) format("truetype");
+    font-weight: 600
+}
+
+@font-face {
+    font-family: SegoeUI Semibold;
+    src: local("Segoe UI Semibold"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.ttf) format("truetype");
+    font-weight: 700
+}
+
+.D-table-div * {
+    font-family: SegoeUI, sans-serif;
+    color: #24292e;
+    line-height: 1.5;
+    box-sizing: border-box;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+    outline: none !important;
+}
+
+td.D-table-data img {
+    width: auto;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #e9ecef;
+    display: flex;
+    margin: 2px 0;
+    max-width: 250px;
+}
+
+table.D-table {
+    border-collapse: collapse;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.D-table-wrap {
+    overflow: visible;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    border-radius: 0px 10px 10px 10px;
+}
+
+.D-table-wrap-verticle {
+    overflow: auto;
+    max-height: 800px;
+}
+
+.D-table-wrap-verticle::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.D-table-wrap-verticle::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 50px;
+    border: 1px solid gainsboro;
+}
+
+.D-table-wrap-verticle::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+th.D-table-heading {
+    font-family: SegoeUI Semibold, sans-serif;
+    text-transform: capitalize;
+    padding: 10px 15px;
+    max-width: 250px;
+    white-space: nowrap;
+    text-align: left;
+    font-size: 15px;
+    background: #ffffff;
+    color: #f9826c;
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+th.D-table-heading * {
+    font-family: SegoeUI Semibold, sans-serif;
+    font-size: 15px;
+
+}
+
+th.D-table-heading .D-table-row-wrap {
+    color: #f9826c;
+}
+
+.D-table-dark-head th.D-table-heading .D-table-row-wrap {
+    color: #ffffff;
+}
+
+table.D-table.D-table-super-compact th.D-table-heading * {
+    font-size: 14px;
+}
+
+.D-table-data-wrap {
+    width: auto;
+    white-space: nowrap;
+    max-width: 250px;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.D-table-sticky-col {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 999 !important;
+    background: white !important;
+}
+
+td.D-table-data {
+    padding: 10px 15px;
+    font-size: 15px;
+    border-bottom: 1px solid #e9ecef;
+    white-space: normal;
+}
+
+a.D-table-btn {
+    text-decoration: none;
+    /* background: #f6f6f6;*/
+    margin-right: 0px;
+    border-radius: 50px;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #24292e;
+}
+
+ul.D-table-actions {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+a.D-table-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+li.D-table-action-li {
+    position: relative;
+}
+
+.D-table-dropdown-div {
+    position: absolute;
+    background: white;
+    min-width: 100px;
+    border-radius: 5px;
+    right: 0;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    padding: 5px 0;
+    z-index: 9999;
+    top: calc(100% + 10px);
+}
+
+.D-table-dropdown-div a:hover {
+    background: #f5f5f5;
+}
+
+.D-table-dropdown-div a {
+    display: block;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+.D-table-dropdown-div {
+    display: none;
+}
+
+.D-table-filter-div {
+    margin: 0;
+    background: white;
+    padding: 0px;
+    border-radius: 5px;
+    /*box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);*/
+    display: flex;
+    align-items: center;
+}
+
+.D-table-filter-item label {
+    display: block;
+    color: #616161;
+    font-size: 14px;
+    font-family: "Segoe UI Semibold", sans-serif;
+    margin-bottom: 10px;
+}
+
+.D-table-filter-item:not(:last-child) {
+    margin-left: 10px;
+}
+
+.D-table-filter-item:not(:last-child) {
+    border-right: 1px solid #e9ecef;
+    padding-right: 10px;
+}
+
+.D-table-filter-item input {
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    outline: none !important;
+    background: #f9f9fa;
+    margin-left: 10px;
+}
+
+.D-table-filter-item.D-table-filter-right {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+button.D-table-filter-btn {
+    border-radius: 5px;
+    background: #1074e7;
+    border: 1px solid #1074e7;
+    padding: .8em 1.2em;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    width: auto;
+    margin-right: .5em;
+    outline: none;
+}
+
+button.D-table-filter-btn:hover {
+    background: #fff;
+    color: #1074e7;
+    border: 1px solid #1074e7;
+}
+
+button.D-table-filter-btn:focus {
+    box-shadow: 0 0 0 0.2rem #1074e750;
+}
+
+button.D-table-filter-btn.D-table-delete-btn {
+    background: #fb4c5d;
+    border-color: #fb4c5d;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: .5em;
+    width: auto;
+    padding: .8em 1.2em;
+}
+
+button.D-table-filter-btn.D-table-delete-btn:hover {
+    color: #fb4c5d;
+    background: #fff;
+    border-color: #fb4c5d;
+}
+
+button.D-table-filter-btn.D-table-delete-btn:focus {
+    box-shadow: 0 0 0 .2rem rgba(251, 76, 93, .35)
+}
+
+.D-table-filter-item select {
+    border: 1px solid white;
+    padding: 3px 15px;
+    border-radius: 5px;
+    background: #ffffff;
+    font-size: 15px;
+    outline: none !important;
+}
+
+tr.D-table-row:hover {
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+}
+
+td.D-table-data.D-table-arrow-tr i, .D-table-heading-arrow i {
+    font-size: 25px;
+}
+
+.D-table-navigation i {
+    font-size: 25px;
+}
+
+.D-table-navigation a {
+    width: 40px;
+    height: 30px;
+    display: inline-flex;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.D-table-main-div {
+    position: relative;
+}
+
+.D-table-navigation {
+    box-shadow: 0px -3px 10px 0px rgb(0 0 0 / 8%);
+    border-radius: 10px;
+    width: 80px;
+    bottom: 100%;
+    left: 0;
+    display: flex;
+    background: white;
+    margin-right: auto;
+    margin-bottom: 0px;
+}
+
+.D-table-navigation.D-table-navigation-right {
+    margin-right: unset;
+    margin-left: auto;
+}
+
+.D-table-navigation.D-table-navigation-seprate {
+    margin-bottom: 20px;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    border-radius: 10px;
+}
+
+.D-table-navigation.D-table-navigation-seprate ~ .D-table-wrap {
+    border-radius: 10px;
+}
+
+.D-table-navigation.D-table-navigation-right.D-table-navigation-seprate ~ .D-table-wrap {
+    border-radius: 10px;
+}
+
+.D-table-navigation.D-table-navigation-right ~ .D-table-wrap {
+    border-radius: 10px 0 10px 10px;
+}
+
+.D-table-navigation a:first-child {
+    border-right: 1px solid #e9ecef;
+}
+
+.D-table-navigation {
+    padding: 4px;
+    border-radius: 10px 10px 0 0;
+}
+
+.D-table-customize-div {
+    width: 100%;
+    padding: 8px 15px 8px 0;
+    background: white;
+    left: 0;
+    top: 0;
+    z-index: 9;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+}
+
+.D-table-view-div {
+    margin-left: auto;
+    display: flex;
+}
+
+.D-table-view-div > .D-table-view-item:hover {
+    background: #e9ecef;
+}
+
+.D-table-view-div > .D-table-view-item {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.D-table-dropdown-li.D-table-view-item {
+    position: relative;
+}
+
+.D-table-dropdown-li.D-table-view-item > a {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+}
+
+th.D-table-heading:before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 2px;
+    border-bottom: 1px solid #e9ecef;
+    bottom: 0;
+    left: 0;
+}
+
+table.D-table.D-table-compact td.D-table-data {
+    padding: 5px 10px;
+}
+
+table.D-table.D-table-compact th.D-table-heading {
+    padding: 10px 10px;
+}
+
+table.D-table.D-table-super-compact td.D-table-data {
+    padding: 0px 8px;
+    font-size: 14px;
+}
+
+table.D-table.D-table-super-compact th.D-table-heading {
+    padding: 5px 8px;
+    font-size: 14px;
+}
+
+a.D-table-btn img {
+    width: auto;
+    height: 20px;
+    border: none;
+    margin: 0;
+}
+
+.D-table-view-div a img {
+    width: auto;
+    height: 18px;
+}
+
+table.D-table.D-table-striped tr.D-table-row:nth-child(even) td {
+    background: #f9f9fa;
+}
+
+table.D-table.D-table-striped tr.D-table-row:hover td {
+    background: #fafafa;
+    box-shadow: none;
+}
+
+table.D-table.D-table-striped tr.D-table-row:hover {
+
+    box-shadow: none;
+}
+
+table.D-table.D-table-no-border td {
+    border-bottom: none;
+}
+
+.D-table-dark-head th {
+    background: #303a52;
+}
+
+.D-table-search-wrap {
+    position: relative;
+}
+
+.D-table-search-wrap a {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+}
+
+ul.D-table-pagination {
+    list-style: none;
+    justify-content: flex-end;
+    padding: 0;
+    display: inline-flex;
+    margin: 0;
+}
+
+li.D-table-page-item a {
+    text-decoration: none;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    margin-right: 10px;
+}
+
+.D-table-pagination-div {
+    text-align: right;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.D-table-pagination-div p {
+    margin: 0;
+    margin-right: 15px;
+    font-size: 14px;
+    font-family: "Segoe UI Semibold", sans-serif;
+}
+
+.D-table-view-div a svg {
+    width: auto;
+    height: 20px;
+}
+
+.D-table-dropdown-div:before {
+    content: "";
+    border-width: 7px;
+    border-style: solid;
+    border-color: #ff000000 #0000ff00 white #ffa50000;
+    position: absolute;
+    top: -14px;
+    right: 13px;
+}
+
+.D-table-dropdown-show {
+    display: block;
+}
+
+.D-table-context-menu {
+    position: absolute;
+    background: white;
+    min-width: 150px;
+    border-radius: 5px;
+    display: none;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    padding: 0px 0;
+    z-index: 99;
+    transition: none;
+
+}
+
+.D-table-context-menu a {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    text-decoration: none;
+}
+
+.D-table-context-menu a svg {
+    width: auto;
+    height: 18px;
+}
+
+.D-table-context-menu a:hover {
+    background: #f5f5f5;
+}
+
+.D-table-context-menu:before {
+    content: "";
+    border-width: 7px;
+    border-style: solid;
+    border-color: #ff000000 #0000ff00 white #ffa50000;
+    position: absolute;
+    top: -14px;
+    left: 13px;
+}
+
+.D-table-context-menu-show {
+    padding: 5px 0;
+    display: block;
+}
+
+.D-table-context-menu a span {
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+tr.D-table-row.D-table-row-expandable {
+    display: none;
+}
+
+.D-table-dropdown-div a {
+    display: block;
+}
+
+.view-filter-wrap {
+    min-width: 220px;
+}
+
+select.D-table-change-view {
+    border: 1px solid gainsboro;
+    padding: 8px 10px;
+    border-radius: 6px;
+    width: 100%;
+}
+
+.view-filter-wrap label {
+    font-size: 14px;
+    font-family: "Segoe UI Semibold", sans-serif;
+    margin-bottom: 5px;
+    display: block;
+    width: 100%;
+}
+
+.D-table-layout-dropdown .D-table-dropdown-div a:hover {
+    background: white;
+}
+
+.view-filter-wrap {
+    margin-bottom: 10px;
+}
+
+.D-table-row-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.D-table-half-col {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.D-table-half-col:last-child {
+    margin-right: 0px;
+}
+
+  .D-table-edit-td-input {
+      display: block;
+      margin-top: 5px;
+      border: 1px solid gainsboro;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #f4f4f4;
+  }
+
+[data-table-tooltip] {
+    position: relative;
+}
+
+.D-Table-tooltip {
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9;
+    background: white;
+    box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+    width: auto;
+    display: flex;
+    position: absolute;
+    border-radius: 5px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    font-size: 14px;
+
+}
+
+.D-Table-tooltip:before {
+    content: "";
+    border-width: 7px;
+    border-style: solid;
+    border-color: hsl(0deg 0% 100%) #0000ff00 #ffffff00 #ffa50000;
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[data-table-tooltip]:hover .D-Table-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.D-Table-tooltip.D-table-tooltip-bottom {
+    bottom: unset;
+    top: calc(100% + 10px);
+    right: 0;
+    transform: none;
+    left: unset;
+}
+
+.D-Table-tooltip.D-table-tooltip-bottom:before {
+    content: "";
+    border-width: 7px;
+    border-style: solid;
+    border-color: hsl(0deg 0% 100% / 0%) #0000ff00 hsl(0deg 0% 100%) #ffa50000;
+    position: absolute;
+    top: -14px;
+    right: 5px;
+    left: unset;
+    bottom: unset;
+    transform: translateX(-50%);
+}
+.D-table-checkbox-wrap {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 0px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.D-table-checkbox-wrap input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.D-table-checkbox-wrap .checkmark {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+
+/* On mouse-over, add a grey background color */
+.D-table-checkbox-wrap:hover input ~ .checkmark {
+    background-color: #fafafa;
+}
+
+/* When the checkbox is checked, add a blue background */
+.D-table-checkbox-wrap input:checked ~ .checkmark {
+    background-color: #f9826c;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.D-table-checkbox-wrap input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.D-table-checkbox-wrap .checkmark:after {
+    left: 50%;
+    top: calc(50% - 1px);
+    width: 3px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: translate(-50%,-50%) rotate(
+            45deg
+    );
+    -ms-transform: rotate(45deg);
+    transform: translate(-50%,-50%) rotate(
+            45deg
+    );
+}
