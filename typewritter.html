@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .type-item {
+        display: none;
+    }
+    span.cursor {
+        width: 2px;
+        height: 33px;
+        background: black;
+        display: inline-block;
+        animation: blink-animation .8s steps(5, start) infinite;
+        -webkit-animation: blink-animation .8s steps(5, start) infinite;
+        position: relative;
+        top: 0;
+        left: 5px;
+    }
+    .type-item h1 {
+        display: flex;
+        align-items: center;
+    }
+    @keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
+    }
+    @-webkit-keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
+    }
+</style>
+<body>
+<div class="typewriter">
+    <div class="type-item">
+        <h1 class="main-header-p"><span class="type-text">Great Leadership</span> <span class="cursor"></span></h1>
+    </div>
+    <div class="type-item">
+        <h1 class="main-header-p"><span class="type-text">Special Offer</span> <span class="cursor"></span></h1>
+    </div>
+    <div class="type-item">
+        <h1 class="main-header-p"><span class="type-text">Somthing New</span> <span class="cursor"></span></h1>
+    </div>
+</div>
+<script>
+    var i = 0;
+    var slide=0
+    var textItem=document.querySelectorAll(".type-item h1 .type-text")
+    var textItemDiv=document.querySelectorAll(".type-item")
+    var textArray=[]
+    textItem.forEach(v=>{
+        textArray.push(v.innerText)
+        v.innerText=""
+    })
+    var txt=textArray[slide]
+    var speed = 100;
+    function typeWriter() {
+        console.log(slide)
+        if (i < txt.length) {
+            textItemDiv[slide].style.display="block"
+            textItem[slide].innerHTML += txt.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed);
+        }else{
+            i=0
+        }
+    }
+    setInterval(function () {
+        if(document.hasFocus()){
+            textItemDiv[slide].style.display="none"
+            slide++
+            txt= textArray[slide]
+            if(textArray.length>slide){
+                typeWriter()
+            }else{
+                slide=0
+                txt= textArray[slide]
+                textItem.forEach(v=>{
+                    v.innerText=""
+                })
+                typeWriter()
+            }
+        }
+
+    },3000)
+    typeWriter()
+
+
+</script>
+
+</body>
+</html>

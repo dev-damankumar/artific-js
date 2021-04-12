@@ -323,9 +323,9 @@ var DOMInstance = {
         alertUi.append(btn)
         document.body.insertBefore(divParent, document.body.children[0])
     },
-    defineClass:function(className, properties) {
+    defineClass: function (className, properties) {
         console.log(properties.constructor.name)
-        if(typeof className==="string" && (typeof properties === "object" || properties.constructor.name==="Object")){
+        if (typeof className === "string" && (typeof properties === "object" || properties.constructor.name === "Object")) {
             var dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
             var styleTag = document.querySelector("[data-class]")
             if (styleTag && styleTag.tagName === "STYLE") {
@@ -337,19 +337,18 @@ var DOMInstance = {
                 document.head.append(style)
             }
             return dClass
-        }
-        else{
+        } else {
             console.error("className must be of string type and properties must be an object")
         }
 
     },
-    defineClasses:function (classArr) {
-        if(Array.isArray(classArr) || classArr.constructor.name ==="Array"){
-            var classArray=[]
-            classArr.forEach(arr=>{
-                if(arr.length===2){
-                    var className=arr[0]
-                    var properties=arr[1]
+    defineClasses: function (classArr) {
+        if (Array.isArray(classArr) || classArr.constructor.name === "Array") {
+            var classArray = []
+            classArr.forEach(arr => {
+                if (arr.length === 2) {
+                    var className = arr[0]
+                    var properties = arr[1]
                     var dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
                     var styleTag = document.querySelector("[data-class]")
 
@@ -363,28 +362,262 @@ var DOMInstance = {
                         document.head.append(style)
                         classArray.push(dClass)
                     }
-                }else{
+                } else {
                     console.error("nested array must have only two values")
                 }
 
             })
             return classArray
-        }else{
+        } else {
             console.error("argument must be an array")
         }
 
     },
-    includeHTML:function(){
-        var includesHTML=[...document.querySelectorAll("include")]
-        includesHTML.forEach(v=>{
-            var src=v.dataset.src
-            fetch(src).then(res=>{
-                res.text().then(html=>{
-                    v.insertAdjacentHTML("afterend",html)
+    includeHTML: function () {
+        var includesHTML = [...document.querySelectorAll("include")]
+        includesHTML.forEach(v => {
+            var src = v.dataset.src
+            fetch(src).then(res => {
+                res.text().then(html => {
+                    v.insertAdjacentHTML("afterend", html)
                     v.remove()
                 })
             })
         })
+    },
+    getQueryString: function (obj) {
+        if (typeof obj !== "object" || obj.constructor.name !== "Object") return console.error("argument must be of type object")
+        if (typeof (obj) === 'string') return data;
+        let queryString = []
+        for (var [key, value] of Object.entries(obj)) {
+            queryString.push(`${key}=${value}`)
+        }
+        console.log(queryString.join("&"))
+
+    },
+    getDirectChildren: function (parent, selector) {
+        return Array.prototype.slice.call(parent.querySelectorAll(selector))
+    },
+    decodeHTML: function (html) {
+        var txt = document.createElement('textarea');
+        txt.innerHTML = html;
+        return txt.value;
+    },
+    getParams: function (queryString) {
+        var query = queryString.split("?")[1]
+        var queryArray = query.split("&")
+        var params = {}
+        for (var i = 0; i < queryArray.length; i++) {
+            var a = queryArray[i].split("=")
+            params[decodeURIComponent(a[0])] = decodeURIComponent(a[1])
+        }
+        return params
+    },
+    getParents: function (el, parent, filter) {
+        let start = el;
+        let parents = [start]
+        while (start.parentElement !== document.querySelector(parent)) {
+            parents.push(start.parentElement)
+            start = start.parentElement
+        }
+        return parents
+    },
+    isVisible: function (elem) {
+        var distance = elem.getBoundingClientRect();
+        return (
+            distance.top >= 0 &&
+            distance.left >= 0 &&
+            distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            distance.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    },
+    isOutOfViewport: function (elem) {
+        var bounding = elem.getBoundingClientRect();
+        var out = {};
+        out.top = bounding.top < 0;
+        out.left = bounding.left < 0;
+        out.bottom = bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
+        out.right = bounding.right > (window.innerWidth || document.documentElement.clientWidth);
+        out.any = out.top || out.left || out.bottom || out.right;
+        out.all = out.top && out.left && out.bottom && out.right;
+        return out;
+    },
+    getNestedElements: function (selector) {
+        return Array.prototype.slice.call(document.querySelectorAll(`${selector} *`))
+    },
+    importCss: function (filename, as) {
+        var obj = {}
+
+        function getStyleSheet(unique_title) {
+            for (var i = 0; i < document.styleSheets.length; i++) {
+                var sheet = document.styleSheets[i];
+                if (sheet.title == unique_title) {
+                    return sheet.rules;
+                }
+            }
+        }
+
+        function uniqueid() {
+            var idstr = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
+            do {
+                var ascicode = Math.floor((Math.random() * 42) + 48);
+                if (ascicode < 58 || ascicode > 64) {
+                    idstr += String.fromCharCode(ascicode);
+                }
+            } while (idstr.length < 32);
+            return (idstr);
+        }
+
+        function sanitizeStyleRules(text, temp) {
+            const result = text.match(/{([^}]+)}/g)
+                .map(res => res.replace(/{|}/g, ''))[0]
+            const ruleArray = result.split(";")
+            var styleArray = ruleArray.filter(v => {
+                let t = v.replace(/\s/g, '').length
+                if (t.length !== 1) {
+                    return t
+                }
+            })
+            styleArray.forEach(styleArr => {
+                [property, value] = styleArr.split(":")
+                property = property.replace(/"/g, "").trim()
+                value = value.replace(/"/g, "").trim()
+                temp[property] = value
+            })
+        }
+
+        return fetch(filename.toString().trim()).then(res => {
+            return res.text().then(data => {
+                var textCss = data
+                var style = document.createElement("style")
+                style.innerHTML = textCss
+                var unique_id = uniqueid()
+                style.title = unique_id
+                var fontIndex = 0
+                var ruleIndex = 0
+                var keyIndex = 0
+                var supportIndex = 0
+                var mediaIndex = 0
+
+                document.head.append(style)
+                var styleRawArray = [...getStyleSheet(unique_id)]
+                style.remove()
+                styleRawArray.forEach(v => {
+                    var tempObj = {}
+                    if (v.type === 3) {
+                        tempObj[v.href] = v.cssText.replace(/"/g, "'")
+                        if (!obj["@import"]) {
+                            obj["@import"] = []
+                            obj["@import"].push(tempObj)
+                        } else {
+                            obj["@import"].push(tempObj)
+                        }
+                    } else if (v.type === 4) {
+                        let text = ""
+                        var cssRule = [...v.cssRules]
+                        cssRule.forEach(v => {
+                            var tempMedia = {}
+                            text = v.cssText
+                            sanitizeStyleRules(text, tempMedia)
+                            if (v.selectorText in tempObj) {
+                                tempObj[`${v.selectorText}_${mediaIndex}`] = tempMedia
+                                mediaIndex++
+                            } else {
+                                tempObj[v.selectorText] = tempMedia
+                            }
+
+                        })
+
+
+                        if (`@media ${v.media[0]}` in obj) {
+                            obj[`@media ${v.media[0]}_${mediaIndex}`] = tempObj
+                            mediaIndex++
+                        } else {
+                            obj[`@media ${v.media[0]}`] = tempObj
+                        }
+                    } else if (v.type === 7) {
+                        var keyArray = v
+                        for (const key in keyArray) {
+                            if (!isNaN(parseInt(key))) {
+                                var tempMedia = {}
+                                var cssRule = keyArray[key]
+                                text = cssRule.cssText
+                                sanitizeStyleRules(text, tempMedia)
+
+                                if (cssRule.keyText in tempObj) {
+                                    tempObj[`${cssRule.keyText}_${keyIndex}`] = tempMedia
+                                    keyIndex++
+                                } else {
+                                    tempObj[cssRule.keyText] = tempMedia
+                                }
+                            }
+                        }
+                        if (`@keyframes ${v.name}` in obj) {
+                            obj[`@keyframes ${v.name}_${keyIndex}`] = tempObj
+                            keyIndex++
+                        } else {
+                            obj[`@keyframes ${v.name}`] = tempObj
+                        }
+
+                    } else if (v.type === 12) {
+                        let text = ""
+                        var cssRule = [...v.cssRules]
+                        cssRule.forEach(v => {
+                            var tempMedia = {}
+                            text = v.cssText
+                            sanitizeStyleRules(text, tempMedia)
+
+                            if (v.selectorText in tempObj) {
+                                tempObj[`${v.selectorText}_${supportIndex}`] = tempMedia
+                                supportIndex++
+                            } else {
+                                tempObj[v.selectorText] = tempMedia
+                            }
+
+                        })
+
+                        if (`@supports ${v.conditionText}` in obj) {
+                            obj[`@supports ${v.conditionText}_${supportIndex}`] = tempObj
+                            supportIndex++
+                        } else {
+                            obj[`@supports ${v.conditionText}`] = tempObj
+                        }
+                    } else {
+                        var text = v.cssText
+                        sanitizeStyleRules(text, tempObj)
+                        if (v.type === 1) {
+                            if (v.selectorText in obj) {
+                                obj[`${v.selectorText}_${ruleIndex}`] = tempObj
+                                ruleIndex++
+                            } else {
+                                obj[`${v.selectorText}`] = tempObj
+                            }
+                        }
+                        if (v.type === 5) {
+                            if ("@font-face" in obj) {
+                                obj[`@font-face_${fontIndex}`] = tempObj
+                                fontIndex++
+                            } else {
+                                obj["@font-face"] = tempObj
+                            }
+                        }
+
+                    }
+                })
+                if (as === "json") {
+                    return JSON.stringify(obj)
+                }
+                return obj
+            }).catch(err => {
+                console.log(err)
+            })
+        })
+    },
+    hasChild: function (el) {
+        return el.children.length > 0
+    },
+    childCount: function (el) {
+        return el.children.length
     }
 }
 

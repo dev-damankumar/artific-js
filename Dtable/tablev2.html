@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Document</title>
+    <style>
+        .admin-card-header h1 {
+            font-size: 24px;
+            color: #202124;
+            font-family: 'Raleway Semibold';
+        }
+        .admin-card-header.user-manager-header {
+            padding-bottom: 2px;
+        }
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-bottom: 15px;
+        }
+        .admin-card {
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+            margin-bottom: 30px;
+            box-shadow: 0px 5px 25px #52575d1a;
+        }
+        .row.table-row {
+            border-top: 2px solid #EBF2F7;
+            padding-top: 20px;
+        }
+        .admin-card-header.user-manager-header {
+            padding-bottom: 2px;
+        }
+        table.table.admin-table th {
+            background: #f1f4f7;
+            white-space: nowrap;
+            border: none;
+            color: #B3B8BD;
+            font-family: 'Raleway Regular';
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 15px;
+            font-family: "Raleway Semibold";
+
+        }
+        table.table.admin-table td {
+            padding: 15px;
+            font-size: 14px;
+            color: #52575D;
+            white-space: nowrap;
+            font-family: "Raleway Semibold";
+            vertical-align: middle;
+            border: none;
+        }
+        .username-td {
+            display: flex;
+            align-items: center;
+        }
+        .username-td p,.status{
+            font-size: 14px;
+            color: #52575D;
+            font-family: "Raleway Semibold";
+            margin-bottom: 0;
+        }
+        .status{
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .status:before {
+            width: 10px;
+            height: 10px;
+            content: "";
+            background: black;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            border-radius: 50px;
+        }
+        ul.pagination.admin-pagination {
+            justify-content: center;
+        }
+        .custom-control-input:checked~.custom-control-label::before {
+            color: #fff;
+            border-color: #049a9b;
+            background-color: #049a9b;
+        }
+        .custom-control-label::before {
+            border: #E3E9EF solid 1px;
+        }
+        ul.pagination.admin-pagination .page-link {
+            border: none;
+            font-size: 14px;
+            color: #52575D;
+            font-family: 'Raleway Bold';
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding: 0;
+            justify-content: center;
+            margin: 0 3px;
+            border-radius: 8px;
+        }
+        ul.pagination.admin-pagination {
+            margin-top: 25px;
+        }
+        li.page-item.active-li a {
+            background: #049A9B;
+            color: white !important;
+        }
+        li.page-item.disabled a i {
+            color: #bdbdbd !important;
+        }
+        ul.pagination.admin-pagination .page-link i {
+            border: none;
+            font-size: 21px;
+            color: #52575D;
+            font-family: 'Raleway Bold';
+        }
+        .status.cancel-status:before {
+            background: #D14747;
+        }
+        .status.active-status:before {
+            background: #049A9B;
+        }
+        .status.hold-status:before {
+            background: #E3B25C;
+        }
+        .action-div-admin button {
+            border: none;
+            background: none;
+            color: #049A9B;
+            font-size: 20px;
+        }
+        button.delete {
+            color: #D14747;
+        }
+        .username-td img {
+            margin-right: 10px;
+            width: auto;
+            height: 35px;
+        }
+        table.table.admin-table th:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+        table.table.admin-table th:last-child {
+            border-radius: 0px 10px 10px 0px;
+        }
+        table.table.admin-table tr:hover td {
+            background: #EAF2FF;
+        }
+
+        table.table.admin-table tr:hover td:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        table.table.admin-table tr:hover td:last-child {
+            border-radius: 0px 10px 10px 0px;
+        }
+
+    </style>
+</head>
+<body style="margin: 5%;">
+<div class="admin-card">
+    <div class="container-fluid">
+        <div class="row"><div class="col-md-12"><div class="admin-card-header user-manager-header"><h1>Users Manager</h1></div></div></div>
+        <div class="row table-row">
+            <div class="col-md-12 p-0">
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck"></label>
+                                </div>
+                            </th>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Reviews</th>
+                            <th>Subscription</th>
+                            <th>Expirty Date</th>
+                            <th>Status</th>
+                            <th>Edit / Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck1" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck1"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status cancel-status">
+                                    canceled
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck2" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck2"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user2}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status active-status">
+                                    active
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck3" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck3"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status hold-status">
+                                    on hold
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck4" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck4"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status cancel-status">
+                                    canceled
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck5" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck5"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user2}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status active-status">
+                                    active
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck6" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck6"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status hold-status">
+                                    on hold
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck7" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck7"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status cancel-status">
+                                    canceled
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck8" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck88"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user2}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status active-status">
+                                    active
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck9" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck9"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status hold-status">
+                                    on hold
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="customCheck10" name="example1"/>
+                                    <label class="custom-control-label"
+                                           htmlFor="customCheck10"></label>
+                                </div>
+                            </td>
+                            <td>frans01</td>
+                            <td>
+                                <div class="username-td">
+                                    <img src={user}/>
+                                    <p>Francesca Metts</p>
+                                </div>
+                            </td>
+                            <td>frans01@gmail.com</td>
+                            <td>12</td>
+                            <td>1 month</td>
+                            <td>04-12-2023</td>
+                            <td>
+                                <div class="status cancel-status">
+                                    canceled
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-div-admin">
+                                    <button type="button" class="edit"><i
+                                            class='bx bx-pencil'></i></button>
+                                    <button type="button" class="delete"><i
+                                            class='bx bxs-trash-alt'></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="pagination admin-pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            <i class='bx bx-chevron-left'></i>
+                        </a>
+                    </li>
+                    <li class="page-item active-li"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class='bx bx-chevron-right'></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
