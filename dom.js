@@ -1,4 +1,4 @@
-var DOMInstance = {
+var DOM = {
     isElement: function (obj) {
         try {
             return obj instanceof HTMLElement;
@@ -618,9 +618,895 @@ var DOMInstance = {
     },
     childCount: function (el) {
         return el.children.length
+    },
+    generateId: function () {
+        var S4 = function () {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        };
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    },
+    rand: function (min, max) {
+        min = Number(min)
+        max = Number(max)
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    each: function (iterable, cb) {
+        if(!iterable) return
+        if (typeof iterable === "object" && iterable.constructor === Object) {
+            var itr = Object.keys(iterable)
+            itr.forEach((v, i) => {
+                cb(v, iterable[v], iterable)
+            })
+
+        }
+        else if(Array.isArray(iterable) && iterable.constructor === Array){
+            iterable.forEach((v,i)=>{
+                cb(v, i, iterable)
+            })
+        }
+        else{
+            var arrayEl=iterable
+            for (var i=0;i<arrayEl.length;i++){
+                cb(arrayEl[i],i,arrayEl)
+            }
+        }
+
+
+    },
+    rgbToHex: function (r, g, b) {
+
+        function componentToHex(c) {
+            if (c > 255) {
+                c = 255;
+            } else if (c < 0) {
+                c = 0;
+            }
+            var hex = c.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }
+
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    },
+    rgbaToHex: function (r, g, b, a) {
+        r = r.toString(16);
+        g = g.toString(16);
+        b = b.toString(16);
+        a = Math.round(a * 255).toString(16);
+
+        if (r.length == 1)
+            r = "0" + r;
+        if (g.length == 1)
+            g = "0" + g;
+        if (b.length == 1)
+            b = "0" + b;
+        if (a.length == 1)
+            a = "0" + a;
+
+        return "#" + r + g + b + a;
+    },
+    rgbToHsl: function (r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+        if (delta == 0) {
+            h = 0;
+        } else if (cmax == r) {
+            h = ((g - b) / delta) % 6;
+        } else if (cmax == g) {
+            h = (b - r) / delta + 2;
+        } else {
+            h = (r - g) / delta + 4;
+        }
+
+        h = Math.round(h * 60);
+
+
+        if (h < 0) {
+            h += 360;
+        }
+
+        l = (cmax + cmin) / 2;
+
+
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return "hsl(" + h + "," + s + "%," + l + "%)";
+    },
+    rgbaToHsla: function (r, g, b, a) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+        if (delta == 0) {
+            h = 0;
+        } else if (cmax == r) {
+            h = ((g - b) / delta) % 6;
+        } else if (cmax == g) {
+            h = (b - r) / delta + 2;
+        } else {
+            h = (r - g) / delta + 4;
+        }
+
+        h = Math.round(h * 60);
+
+
+        if (h < 0) {
+            h += 360;
+        }
+
+        l = (cmax + cmin) / 2;
+
+
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return "hsl(" + h + "," + s + "%," + l + "%," + a + ")";
+    },
+    hexToRgb: function (hex) {
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `rgb(${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)})` : null;
+    },
+    hexToRgba: function (hex, alpha) {
+        const isValidHex = (hex) => /^#([A-Fa-f0-9]{3,4}){1,2}$/.test(hex)
+        const getChunksFromString = (st, chunkSize) => st.match(new RegExp(`.{${chunkSize}}`, "g"))
+        const convertHexUnitTo256 = (hexStr) => parseInt(hexStr.repeat(2 / hexStr.length), 16)
+        const getAlphafloat = (a, alpha) => {
+            if (typeof a !== "undefined") {
+                a = (a / 255).toFixed(2)
+                if (a.split(".")[1] === "00") {
+                    a = Number(a).toFixed(0)
+                }
+                return a
+            }
+
+            if ((typeof alpha != "number") || alpha < 0 || alpha > 1) {
+                return 1
+            }
+
+            alpha = alpha.toFixed(2)
+            if (alpha.split(".")[1] === "00") {
+                alpha = Number(alpha).toFixed(0)
+            }
+            return alpha
+        }
+        if (!isValidHex(hex)) {
+            throw new Error("Invalid HEX")
+        }
+        const chunkSize = Math.floor((hex.length - 1) / 3)
+        const hexArr = getChunksFromString(hex.slice(1), chunkSize)
+        const [r, g, b, a] = hexArr.map(convertHexUnitTo256)
+
+        return `rgba(${r}, ${g}, ${b}, ${getAlphafloat(a, alpha)})`
+    },
+    hexToHsl: function (H) {
+        // Convert hex to RGB first
+        let r = 0, g = 0, b = 0;
+        if (H.length == 4) {
+            r = "0x" + H[1] + H[1];
+            g = "0x" + H[2] + H[2];
+            b = "0x" + H[3] + H[3];
+        } else if (H.length == 7) {
+            r = "0x" + H[1] + H[2];
+            g = "0x" + H[3] + H[4];
+            b = "0x" + H[5] + H[6];
+        }
+        // Then to HSL
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        let cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+
+        if (delta == 0)
+            h = 0;
+        else if (cmax == r)
+            h = ((g - b) / delta) % 6;
+        else if (cmax == g)
+            h = (b - r) / delta + 2;
+        else
+            h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+
+        if (h < 0)
+            h += 360;
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return "hsl(" + h + "," + s + "%," + l + "%)";
+    },
+    hexToHsla: function (H) {
+        let r = 0, g = 0, b = 0, a = 1;
+
+        if (H.length == 5) {
+            r = "0x" + H[1] + H[1];
+            g = "0x" + H[2] + H[2];
+            b = "0x" + H[3] + H[3];
+            a = "0x" + H[4] + H[4];
+        } else if (H.length == 9) {
+            r = "0x" + H[1] + H[2];
+            g = "0x" + H[3] + H[4];
+            b = "0x" + H[5] + H[6];
+            a = "0x" + H[7] + H[8];
+        } else if (H.length == 7) {
+            r = "0x" + H[1] + H[2];
+            g = "0x" + H[3] + H[4];
+            b = "0x" + H[5] + H[6];
+            a = "0x" + "f" + "f";
+        } else if (H.length == 4) {
+            r = "0x" + H[1] + H[1];
+            g = "0x" + H[2] + H[2];
+            b = "0x" + H[3] + H[3];
+            a = "0x" + "f" + "f";
+        }
+
+        // Normal conversion to HSL
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        let cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+
+        if (delta == 0)
+            h = 0;
+        else if (cmax == r)
+            h = ((g - b) / delta) % 6;
+        else if (cmax == g)
+            h = (b - r) / delta + 2;
+        else
+            h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+
+        if (h < 0)
+            h += 360;
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+
+        if (a !== 1) {
+            a = (a / 255).toFixed(2);
+        }
+
+        if (a.split(".")[1] === "00") {
+            a = Number(a.split(".")[0])
+        }
+
+        return "hsla(" + h + "," + s + "%," + l + "%," + a + ")";
+    },
+    hslToHex: function (h, s, l) {
+        s /= 100;
+        l /= 100;
+
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+            m = l - c / 2,
+            r = 0,
+            g = 0,
+            b = 0;
+
+        if (0 <= h && h < 60) {
+            r = c;
+            g = x;
+            b = 0;
+        } else if (60 <= h && h < 120) {
+            r = x;
+            g = c;
+            b = 0;
+        } else if (120 <= h && h < 180) {
+            r = 0;
+            g = c;
+            b = x;
+        } else if (180 <= h && h < 240) {
+            r = 0;
+            g = x;
+            b = c;
+        } else if (240 <= h && h < 300) {
+            r = x;
+            g = 0;
+            b = c;
+        } else if (300 <= h && h < 360) {
+            r = c;
+            g = 0;
+            b = x;
+        }
+        // Having obtained RGB, convert channels to hex
+        r = Math.round((r + m) * 255).toString(16);
+        g = Math.round((g + m) * 255).toString(16);
+        b = Math.round((b + m) * 255).toString(16);
+
+        // Prepend 0s, if necessary
+        if (r.length == 1)
+            r = "0" + r;
+        if (g.length == 1)
+            g = "0" + g;
+        if (b.length == 1)
+            b = "0" + b;
+
+        return "#" + r + g + b;
+    },
+    hslaToHex: function (h, s, l, a) {
+        s /= 100;
+        l /= 100;
+
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+            m = l - c / 2,
+            r = 0,
+            g = 0,
+            b = 0;
+
+        if (0 <= h && h < 60) {
+            r = c;
+            g = x;
+            b = 0;
+        } else if (60 <= h && h < 120) {
+            r = x;
+            g = c;
+            b = 0;
+        } else if (120 <= h && h < 180) {
+            r = 0;
+            g = c;
+            b = x;
+        } else if (180 <= h && h < 240) {
+            r = 0;
+            g = x;
+            b = c;
+        } else if (240 <= h && h < 300) {
+            r = x;
+            g = 0;
+            b = c;
+        } else if (300 <= h && h < 360) {
+            r = c;
+            g = 0;
+            b = x;
+        }
+        // Having obtained RGB, convert channels to hex
+        r = Math.round((r + m) * 255).toString(16);
+        g = Math.round((g + m) * 255).toString(16);
+        b = Math.round((b + m) * 255).toString(16);
+
+        a = Math.round(a * 255).toString(16);
+
+        if (r.length == 1)
+            r = "0" + r;
+        if (g.length == 1)
+            g = "0" + g;
+        if (b.length == 1)
+            b = "0" + b;
+        if (a.length == 1)
+            a = "0" + a;
+
+        return "#" + r + g + b + a;
+    },
+    hslToRgb: function (h, s, l) {
+        // Must be fractions of 1
+        s /= 100;
+        l /= 100;
+
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+            m = l - c / 2,
+            r = 0,
+            g = 0,
+            b = 0;
+        if (0 <= h && h < 60) {
+            r = c;
+            g = x;
+            b = 0;
+        } else if (60 <= h && h < 120) {
+            r = x;
+            g = c;
+            b = 0;
+        } else if (120 <= h && h < 180) {
+            r = 0;
+            g = c;
+            b = x;
+        } else if (180 <= h && h < 240) {
+            r = 0;
+            g = x;
+            b = c;
+        } else if (240 <= h && h < 300) {
+            r = x;
+            g = 0;
+            b = c;
+        } else if (300 <= h && h < 360) {
+            r = c;
+            g = 0;
+            b = x;
+        }
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+
+        return "rgb(" + r + "," + g + "," + b + ")";
+    },
+    hslaToRgba: function (h, s, l, a) {
+        // Must be fractions of 1
+        s /= 100;
+        l /= 100;
+
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+            m = l - c / 2,
+            r = 0,
+            g = 0,
+            b = 0;
+        if (0 <= h && h < 60) {
+            r = c;
+            g = x;
+            b = 0;
+        } else if (60 <= h && h < 120) {
+            r = x;
+            g = c;
+            b = 0;
+        } else if (120 <= h && h < 180) {
+            r = 0;
+            g = c;
+            b = x;
+        } else if (180 <= h && h < 240) {
+            r = 0;
+            g = x;
+            b = c;
+        } else if (240 <= h && h < 300) {
+            r = x;
+            g = 0;
+            b = c;
+        } else if (300 <= h && h < 360) {
+            r = c;
+            g = 0;
+            b = x;
+        }
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+
+        return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    },
+    nameToRgb: function (name) {
+        let fakeDiv = document.createElement("div");
+        fakeDiv.style.color = name;
+        document.body.appendChild(fakeDiv);
+        let cs = window.getComputedStyle(fakeDiv),
+            pv = cs.getPropertyValue("color");
+        document.body.removeChild(fakeDiv);
+        return pv;
+    },
+    nameToHex: function (name) {
+        let fakeDiv = document.createElement("div");
+        fakeDiv.style.color = name;
+        document.body.appendChild(fakeDiv);
+
+        let cs = window.getComputedStyle(fakeDiv),
+            pv = cs.getPropertyValue("color");
+
+        document.body.removeChild(fakeDiv);
+
+        let rgb = pv.substr(4).split(")")[0].split(","),
+            r = (+rgb[0]).toString(16),
+            g = (+rgb[1]).toString(16),
+            b = (+rgb[2]).toString(16);
+
+        if (r.length == 1)
+            r = "0" + r;
+        if (g.length == 1)
+            g = "0" + g;
+        if (b.length == 1)
+            b = "0" + b;
+
+        return "#" + r + g + b;
+    },
+    nameToHsl: function (name) {
+        let fakeDiv = document.createElement("div");
+        fakeDiv.style.color = name;
+        document.body.appendChild(fakeDiv);
+
+        let cs = window.getComputedStyle(fakeDiv),
+            pv = cs.getPropertyValue("color");
+
+        document.body.removeChild(fakeDiv);
+
+        // Code ripped from RGBToHSL() (except pv is substringed)
+        let rgb = pv.substr(4).split(")")[0].split(","),
+            r = rgb[0] / 255,
+            g = rgb[1] / 255,
+            b = rgb[2] / 255,
+            cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+
+        if (delta == 0)
+            h = 0;
+        else if (cmax == r)
+            h = ((g - b) / delta) % 6;
+        else if (cmax == g)
+            h = (b - r) / delta + 2;
+        else
+            h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+
+        if (h < 0)
+            h += 360;
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return "hsl(" + h + "," + s + "%," + l + "%)";
+    },
+    getMonthName(type = "long", local = "en") {
+        /*type="long" january||"short" jan*/
+        const formatter = new Intl.DateTimeFormat(local.toString(), {month: type.toString()});
+        const month = formatter.format(new Date());
+        return month
+    },
+    getYear(type = "long") {
+        /*type="long" = 2021||"short" = 21*/
+        if (type === "long") {
+            type = "numeric"
+        }
+        if (type === "short") {
+            type = "2-digit"
+        }
+        const formatter = new Intl.DateTimeFormat("en", {year: type.toString()});
+        const year = formatter.format(new Date());
+        return year
+    },
+    getDay(type = "long") {
+        /*type="long" = 02||"short" = 2*/
+        if (type === "long") {
+            type = "2-digit"
+        }
+        if (type === "short") {
+
+            type = "numeric"
+        }
+        const formatter = new Intl.DateTimeFormat("en", {day: type});
+        return formatter.format(new Date());
+    },
+    getHours(format = true, type = "long", local = "en") {
+        /*type="long" 02||"short" 2*/
+        if (type === "long") {
+            type = "2-digit"
+
+        }
+        if (type === "short") {
+            type = "numeric"
+        }
+        const formatter = new Intl.DateTimeFormat(local.toString(), {hour: type.toString(), hour12: format});
+        let hour = formatter.format(new Date());
+        if (type === "numeric") {
+            if (hour.startsWith("0")) {
+                hour = hour.replace("0", "")
+            }
+        }
+        return hour.replace(/PM|AM|pm|am/, "").trim()
+    },
+    getMinutes(type = "long") {
+        /*type="long" = 2021||"short" = 21*/
+        if (type === "long") {
+            type = "2-digit"
+        }
+        if (type === "short") {
+            type = "numeric"
+        }
+
+
+        const formatter = new Intl.DateTimeFormat("en", {minute: type.toString()});
+        let minute = formatter.format(new Date());
+        if (type === "2-digit") {
+            if (minute.length === 1) {
+                minute = `0${minute}`
+            }
+        }
+        return minute
+    },
+    getSeconds(type = "long") {
+        /*type="long" = 02||"short" = 2*/
+        if (type === "long") {
+            type = "2-digit"
+        }
+        if (type === "short") {
+            type = "numeric"
+        }
+
+        const formatter = new Intl.DateTimeFormat("en", {second: type});
+        let seconds = formatter.format(new Date());
+        if (type === "2-digit") {
+            if (seconds.length === 1) {
+                seconds = `0${seconds}`
+            }
+        }
+        return seconds
+    },
+    getMeridiem() {
+        var meridium = null
+        const formatter = new Intl.DateTimeFormat("en", {hour: "numeric", hour12: true});
+        return formatter.format(new Date()).split(" ")[1]
+    },
+    formatDate: function (date, format = "dd mm yy", delimeter = "-") {
+        /*format
+   d=>date = 1,10
+   dd=>date = 01,10
+   m=>month=>1,2,11,12
+   mm<=>month=>01,02,11,12
+   M=>month=jan,feb
+   MM=>month=january,march
+   y=>year=21,22
+   yy=>year=2021,2022
+
+   delimeter="-"|"/"...
+   */
+        function getDay(type = "long") {
+            if (type === "long") {
+                type = "2-digit"
+            }
+            if (type === "short") {
+
+                type = "numeric"
+            }
+            const formatter = new Intl.DateTimeFormat("en", {day: type});
+            return formatter.format(date);
+        }
+
+        function getMonthName(type = "long", local = "en") {
+            const formatter = new Intl.DateTimeFormat(local.toString(), {month: type.toString()});
+            const month = formatter.format(date);
+            return month
+        }
+
+        function getYear(type = "long") {
+            if (type === "long") {
+                type = "numeric"
+            }
+            if (type === "short") {
+                type = "2-digit"
+            }
+            const formatter = new Intl.DateTimeFormat("en", {year: type.toString()});
+            const year = formatter.format(date);
+            return year
+        }
+
+        var formatArr = format.split(" ")
+        var isMonthNumeric = false
+        var str = "d m y"
+        var newFormat = {}
+        formatArr.forEach(v => {
+            if (v.startsWith("d")) {
+                if (v.length === 2) {
+                    newFormat.date = "long"
+                } else {
+                    newFormat.date = "short"
+                }
+            }
+            if (v.startsWith("m")) {
+                isMonthNumeric = true
+                if (v.length === 2) {
+                    newFormat.month = "2-digit"
+                } else {
+                    newFormat.month = "numeric"
+                }
+            }
+            if (v.startsWith("M")) {
+                if (v.length === 2) {
+                    newFormat.month = "long"
+                } else {
+                    newFormat.month = "short"
+                }
+
+            }
+            if (v.startsWith("y")) {
+                if (v.length === 4) {
+                    newFormat.year = "long"
+                } else {
+                    newFormat.year = "short"
+                }
+            }
+        })
+
+        var day = getDay(newFormat.date)
+        var month = getMonthName(newFormat.month)
+        if (isMonthNumeric) {
+            month = getMonthName(newFormat.month)
+        }
+
+        var year = getYear(newFormat.year)
+
+        str = str.replace("d", day)
+        str = str.replace("m", month)
+        str = str.replace("y", year)
+        str = str.replace(/\s/g, delimeter)
+
+        return str
+
+    },
+    formatTime: function (date, format = "hh mm ss aa", delimeter = ":") {
+        /*format
+   h=>24hours = 1,10
+   hh=>24hours = 01,10
+   m=>month=>1,2,11,12
+   mm<=>month=>01,02,11,12
+   H=>12 hours=1 AM|PM
+   HH=>12 hours=01 AM|PM
+   s=>second=1,2
+   ss=>second=01,02
+   ll=>millisecounds=999
+
+   delimeter="-"|"/"...
+   */
+        function getHours(format = true, type = "long", local = "en") {
+            /*type="long" 02||"short" 2*/
+            if (type === "long") {
+                type = "2-digit"
+            }
+            if (type === "short") {
+                type = "numeric"
+            }
+            const formatter = new Intl.DateTimeFormat(local.toString(), {hour: type.toString(), hour12: format});
+            let hour = formatter.format(date);
+            if (type === "numeric") {
+                if (hour.startsWith("0")) {
+                    hour = hour.replace("0", "")
+                }
+            }
+            return hour.replace(/PM|AM|pm|am/, "").trim()
+        }
+
+        function getMinutes(type = "long") {
+            /*type="long" = 2021||"short" = 21*/
+            if (type === "long") {
+                type = "2-digit"
+            }
+            if (type === "short") {
+                type = "numeric"
+            }
+
+            const formatter = new Intl.DateTimeFormat("en", {minute: type.toString()});
+            let minute = formatter.format(date);
+            if (type === "2-digit") {
+                if (minute.length === 1) {
+                    minute = `0${minute}`
+                }
+            }
+            return minute
+        }
+
+        function getSeconds(type = "long") {
+            /*type="long" = 02||"short" = 2*/
+            if (type === "long") {
+                type = "2-digit"
+            }
+            if (type === "short") {
+                type = "numeric"
+            }
+
+            const formatter = new Intl.DateTimeFormat("en", {second: type});
+            let seconds = formatter.format(date);
+            if (type === "2-digit") {
+                if (seconds.length === 1) {
+                    seconds = `0${seconds}`
+                }
+            }
+            return seconds
+        }
+
+        var formatArr = format.split(" ")
+        var str = "h-m-s-l a"
+        var milli = false
+        var hourFormat = true
+        var newFormat = {}
+        formatArr.forEach(v => {
+            if (v.startsWith("h")) {
+                if (v.length === 2) {
+                    newFormat.hour = "2-digit"
+                } else {
+                    newFormat.hour = "numeric"
+                }
+            }
+            if (v.startsWith("l")) {
+                milli = true
+            }
+            if (v.startsWith("H")) {
+                hourFormat = false
+                if (v.length === 2) {
+                    newFormat.hour = "2-digit"
+                } else {
+                    newFormat.hour = "numeric"
+                }
+            }
+            if (v.startsWith("m")) {
+                if (v.length === 2) {
+                    newFormat.minute = "2-digit"
+                } else {
+                    newFormat.minute = "numeric"
+                }
+            }
+
+            if (v.startsWith("s")) {
+                if (v.length === 2) {
+                    newFormat.second = "long"
+                } else {
+                    newFormat.second = "short"
+                }
+            }
+        })
+
+
+        var hours = getHours(newFormat.hour)
+        var minutes = getMinutes(newFormat.minute)
+        var second = getSeconds(newFormat.second)
+        var milliseconds = ""
+        var meridium = ""
+        const formatter = new Intl.DateTimeFormat("en", {hour: newFormat.hour, hour12: hourFormat});
+        let hour = formatter.format(date).split(" ")[1]
+        if (hour) {
+            meridium = hour
+        }
+        if (milli) {
+            milliseconds = date.getMilliseconds()
+            milliseconds = milliseconds.toString().padStart(3, 0);
+        } else {
+            str = str.replace("-l", "")
+        }
+
+        if (newFormat.hour === "numeric") {
+            if (hours.startsWith("0")) {
+                hours = hours.replace("0", "")
+            }
+        }
+        str = str.replace("h", hours)
+        str = str.replace("m", minutes)
+        str = str.replace("s", second)
+        str = str.replace("l", milliseconds)
+        str = str.replace("a", meridium)
+        str = str.replace(/-/g, delimeter)
+
+        return str
+
     }
 }
-
-
-const DOM = Object.create(DOMInstance);
 export default DOM
