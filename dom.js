@@ -1507,6 +1507,104 @@ var DOM = {
 
         return str
 
+    },
+    isItratable:function(obj) {
+        if (obj == null) return false;
+        return typeof obj[Symbol.iterator] === 'function';
+    },
+    getInfo:function(el){
+        function isIterable(obj) {
+            if (obj == null) return false;
+            return typeof obj[Symbol.iterator] === 'function';
+        }
+        function setInfo(el) {
+            var tempObj={}
+
+            tempObj.tagName=el.tagName.toLowerCase()
+            tempObj.element=`<${el.tagName.toLowerCase()}>`
+            tempObj.hasChildren=!!(el.children.length)
+            tempObj.text=el.innerHTML
+            tempObj.outerHTML=el.outerHTML
+            var attributes={}
+            var attrs=[...el.attributes]
+            for (var j=0;j<attrs.length;j++){
+                attributes[attrs[j].nodeName]=attrs[j].nodeValue
+            }
+            tempObj.attributes=attributes
+            if(!!(el.children.length)){
+                tempObj.children=el.children
+                tempObj.childElementCount=el.children.length
+            }
+            return tempObj
+        }
+        var isArray=isIterable(el)
+        var info=[];
+        if(isArray){
+            let array=[...el]
+            console.log(array)
+
+            for (var i=0;i<array.length;i++){
+                info.push(setInfo(array[i]))
+            }
+
+        }else{
+            return setInfo(el)
+        }
+        return info
+    },
+    compare:function (el1,el2) {
+        var diff={}
+        function isIterable(obj) {
+            if (obj == null) return false;
+            return typeof obj[Symbol.iterator] === 'function';
+        }
+        function check(el1,el2) {
+            if(el2.constructor===Object || el1.constructor===Object) return console.error("can't compare objects")
+            if(Object.keys(el1.attributes)!==Object.keys(el2.attributes)){
+                var el1data=el1.attributes
+                var el2data=el2.attributes
+                var temp={}
+                if(Object.keys(el1data).length>0){
+                    let obj=[...el1data]
+                    obj.forEach(v=>{
+                        var key=`${v.name}`
+                        temp[key]={prev:v.value,next:null}
+                    })
+                }
+                if(Object.keys(el2data).length>0){
+                    let obj=[...el2data]
+                    obj.forEach(v=>{
+                        var key=`${v.name}`
+                        if(!temp[key]){
+                            temp[key]={prev:null}
+                        }
+                        temp[key].next=v.value
+                    })
+                }
+
+                var temparr=Object.keys(temp)
+                temparr.forEach(v=>{
+                    if(temp[v].prev!==temp[v].next){
+                        diff[v]={prev:temp[v].prev,next:temp[v].next}
+                    }
+                })
+            }
+            if(el1.innerHTML!==el2.innerHTML){
+                diff.innerHTML={prev:el1.innerHTML,next:el2.innerHTML}
+            }
+            return diff
+        }
+        if(isIterable(el1)||isIterable(el2)) return console.error("can't compare itratable")
+        if(el1.tagName!==el2.tagName) return console.error("can't compare element with diffrent tag")
+        return check(el1,el2)
+    },
+    jsonToObject:function (json) {
+        if(typeof json !== "string") return console.error("argument must be json")
+        return JSON.parse(json)
+    },
+    objectToJson:function (obj) {
+        if(typeof obj !== "object") return console.error("argument must be object")
+        return JSON.stringify(obj)
     }
 }
 export default DOM
