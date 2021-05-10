@@ -9,8 +9,8 @@
 </head>
 <body style="margin: 30px">
 <Dtabs data-style-seperate   data-tabs="abc">
-    <Dtabs-item data-tab-id="js" data-tab-active class="abc yg">Javascript</Dtabs-item>
-    <Dtabs-item data-tab-id="py" style="color:red;border:none">Python</Dtabs-item>
+    <Dtabs-item data-tab-id="js" class="abc yg">Javascript</Dtabs-item>
+    <Dtabs-item data-tab-id="py" style="color:red;border:none" data-tab-active class="tab-active">Python</Dtabs-item>
     <Dtabs-item data-tab-id="jsx">React</Dtabs-item>
     <Dtabs-item data-tab-id="node">Nodejs</Dtabs-item>
     <Dtabs-item data-tab-id="ng">Angular</Dtabs-item>
@@ -19,12 +19,12 @@
     <Dtabs-item data-tab-id="css">Css</Dtabs-item>
     <Dtabs-item data-tab-id="ruby">Ruby</Dtabs-item>
     <Dtabs-content>
-        <Dtab-content-item data-content-active data-content-item="js" class="myclas">
+        <Dtab-content-item  data-content-item="js" data-content-active class="myclas">
             <h2>Javascript</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam fugiat nisi numquam qui sit.
                 Accusantium atque commodi doloribus ducimus quisquam.</p>
         </Dtab-content-item>
-        <Dtab-content-item data-content-item="py">
+        <Dtab-content-item  data-content-item="py">
             <h2>Python</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam fugiat nisi numquam qui sit.
                 Accusantium atque commodi doloribus ducimus quisquam.</p>
@@ -70,7 +70,7 @@
     </Dtabs-content>
 </Dtabs>
 <h1>new</h1>
-<Dtabs data-style-seperate   data-tabs="abc2">
+<Dtabs data-style-seperate data-tab-verticle   data-tabs="abc2">
     <Dtabs-item data-tab-id="a1" data-tab-active class="abc yg">Daman</Dtabs-item>
     <Dtabs-item data-tab-id="a2" style="color:red;border:none">Ravi</Dtabs-item>
     <Dtabs-item data-tab-id="a3">Muskan</Dtabs-item>
@@ -96,6 +96,7 @@
 <script type="text/javascript" src="dtabs.js"></script>
 <script>
     var d=Dtabs("abc")
+    d.active("py")
     var d1=Dtabs("abc2")
     console.log(d)
 </script>
