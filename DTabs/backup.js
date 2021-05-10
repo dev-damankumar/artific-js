@@ -7,6 +7,7 @@ const Dtabs = (function () {
             --color2: #fafbfc;
             --color3: #1b1f2326;
         }
+
         @font-face {
             font-family: SegoeUI Light;
             src: local("Segoe UI Light"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff2) format("woff2"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff) format("woff"), url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.ttf) format("truetype");
@@ -453,6 +454,7 @@ ul.Dtabs {
 		return {attributes, classes: classNames}
 	}
 	function makeList(tabs) {
+
 		var tabsHtml = "";
 		tabs.forEach(v => {
 			var {attributes, classes} = setAttributes(v)
@@ -470,22 +472,23 @@ ul.Dtabs {
 		var contentHtml = "";
 		contentItem.forEach(v => {
 			var {attributes, classes} = setAttributes(v)
+
 			if (v.hasAttribute("data-content-active")) {
 				contentHtml += ` <div class="Dtab-content-item Dtab-content-active ${classes}" ${attributes}>${v.innerHTML}</div>`
 			} else {
 				contentHtml += ` <div class="Dtab-content-item  ${classes}" ${attributes}>${v.innerHTML}</div>`
 			}
+
 		})
 		return contentHtml
 	}
 	function Constructor(selector) {
 		/*Properties*/
-		this.selector = selector.toString().trim()
-		this.tab=[...document.querySelectorAll(`dtabs[data-tabs="${this.selector}"]`)]
-		let tabContents= [...document.querySelectorAll(`[data-tabs="${this.selector}"] Dtab-content-item`)]
-		let tabItems=  [...document.querySelectorAll(`[data-tabs='${this.selector}'] Dtabs-item`)]
-		
-		this.tab.forEach(v => {
+		this.selector = selector
+		let tabContentItems = [...document.querySelectorAll(`[data-tabs="${this.selector}"] Dtab-content-item`)]
+		let tabsDiv = [...document.querySelectorAll(`dtabs[data-tabs='${this.selector}']`)]
+		let tabs = [...document.querySelectorAll(`[data-tabs='${this.selector}'] Dtabs-item`)]
+		tabsDiv.forEach(v => {
 			if(v.hasAttribute("data-tab-verticle")){
 				if(!styleSetVerticle){
 					document.head.innerHTML += styleVerticle
@@ -498,23 +501,23 @@ ul.Dtabs {
 					styleSet=true
 				}
 			}
-			let id = this.selector
+			var id = v.dataset.tabs.trim()
 			var styleSeperate=v.hasAttribute("data-style-seperate")
 			v.removeAttribute("data-tabs")
 			const tabHtml = `<div class="Dtab-div ${styleSeperate?"Dtabs-2":""}" data-tabs="${id}">
                             <ul class="Dtabs" data-tabs-ref="#${id}">
-        ${makeList(tabItems)}
+        ${makeList(tabs)}
       
     </ul>
                             <div class="Dtabs-content" data-content-ref="#${id}">
-        ${makeContentItem(tabContents)}
+        ${makeContentItem(tabContentItems)}
     </div>
                          </div>`
 			v.innerHTML = tabHtml
-			
-			
-			let tabUl = v.querySelector(`[data-tabs-ref="#${id}"]`)
-			tabUl.addEventListener("click",  (e)=> {
+
+			let tabUl = document.querySelector(`[data-tabs-ref="#${id}"]`)
+			tabUl.addEventListener("click", function (e) {
+
 				var li = null
 				if (e.target.dataset.tabId) {
 					li = e.target
@@ -525,14 +528,12 @@ ul.Dtabs {
 					li.setAttribute("data-tab-disabled","true")
 				}
 				if (li && li.dataset.tabId.trim() && !freeze.includes(li.dataset.tabId.trim())) {
-					
 					var tabId = li.dataset.tabId
-					
-					var tabContent = document.querySelector(`[data-content-ref="#${id}"]`)
+					var contentDiv = document.querySelector(`[data-content-ref="#${id}"]`)
 					var tabDiv = document.querySelector(`[data-tabs-ref="#${id}"]`)
-					var tabContentItem = tabContent.querySelector(`[data-content-item="${tabId}"]`)
+					var tabContent = contentDiv.querySelector(`[data-content-item="${tabId}"]`)
 					var activeLi = [...tabDiv.querySelectorAll(".tab-active")] || [...tabDiv.querySelectorAll("[data-tab-active]")]
-					if (tabContentItem) {
+					if (tabContent) {
 						if(activeLi[0]!==li){
 							window.dispatchEvent(new CustomEvent("tabChange"));
 						}
@@ -542,13 +543,13 @@ ul.Dtabs {
 						})
 						li.classList.add("tab-active")
 						li.setAttribute("data-tab-active", "")
-						var activeTabContent = [...tabContent.querySelectorAll(".Dtab-content-active")] || [...tabContent.querySelectorAll("[data-content-active]")]
+						var activeTabContent = [...contentDiv.querySelectorAll(".Dtab-content-active")] || [...contentDiv.querySelectorAll("[data-content-active]")]
 						activeTabContent.forEach(v => {
 							v.classList.remove("Dtab-content-active")
 							v.removeAttribute("data-content-active")
 						})
-						tabContentItem.classList.add("Dtab-content-active")
-						tabContentItem.setAttribute("data-content-active", "")
+						tabContent.classList.add("Dtab-content-active")
+						tabContent.setAttribute("data-content-active", "")
 						window.dispatchEvent(new CustomEvent("tabActive"));
 					} else {
 						console.error("Cant Find Tab Content")
@@ -559,7 +560,7 @@ ul.Dtabs {
 
 		this.tabUl = document.querySelector(`[data-tabs-ref="#${selector}"]`)
 		this.tabContent = document.querySelector(`[data-content-ref="#${selector}"]`)
-		
+
 		/*Methods*/
 		this.addTab = (name, id) => {
 			try{
@@ -574,6 +575,8 @@ ul.Dtabs {
 				console.error("error while adding tab")
 				return false
 			}
+
+
 		}
 		this.addContent = (html, id) => {
 			try {
@@ -596,6 +599,7 @@ ul.Dtabs {
 					tab.nextElementSibling.classList.add("tab-active")
 					tab.nextElementSibling.setAttribute("data-tab-active","")
 					var contentId=tab.nextElementSibling.dataset.tabId
+
 					var content=this.tabContent.querySelector(`[data-content-item="${id}"]`)
 					var contentNext=this.tabContent.querySelector(`[data-content-item="${contentId}"]`)
 					content.classList.remove("Dtab-content-active")
@@ -749,7 +753,7 @@ ul.Dtabs {
 				activeTab.removeAttribute("data-tab-active")
 				tab.classList.add("tab-active")
 				tab.setAttribute("data-tab-active","")
-				
+
 				activeContent.classList.remove("Dtab-content-active")
 				activeContent.removeAttribute("data-content-active")
 				content.classList.add("Dtab-content-active")
