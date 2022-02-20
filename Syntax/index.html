@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<pre id="pre">
+    <code class="language-javascript">function resetInputs(){
+         var from=document.querySelector('#event-start').value=""
+        var to=document.querySelector(`#event-end`).value=""
+        var title=document.querySelector("#event-title").value=""
+        var location=document.querySelector("#event-location").value=""
+        var description=document.querySelector("#event-details").value=""
+    }
+    var input = document.getElementsByClassName("event-calender")[0]
+    input.eventCalender()
+
+    var submitBtn=document.querySelector(".submit_btn");
+    submitBtn.addEventListener("click",function(){
+        var from=document.querySelector("#event-start").value
+        var to=document.querySelector("#event-end").value
+        var title=document.querySelector("#event-title").value
+        var location=document.querySelector("#event-location").value
+        var description=document.querySelector("#event-details").value
+
+        var target=document.querySelector(".active-event");
+        if(!target){
+            alert("please select the date to set event")
+        }
+        else{
+            console.log((target))
+            target.innerHTML=html
+        }
+        var eventHandle=document.querySelector(".event-handle")
+        eventHandle.style.left=0
+        eventHandle.style.top=0
+        eventHandle.style.display="none"
+        resetInputs()
+        eventdiv()
+    })
+    function eventdiv(){
+        var eventDiv=document.querySelectorAll(".event-div")
+        eventDiv.forEach(v=>{
+            v.parentElement.addEventListener("click",function(e){
+                console.log(e)
+            e.stopPropagation()
+        })
+      })
+    }
+    eventdiv()
+    var close=document.querySelector(".close-event");
+    close.addEventListener("click",function(){
+        this.closest(".event-handle").style.display="none"
+        resetInputs()
+        document.querySelector(".active-event").classList.remove("active-event")
+    })
+</code>
+</pre>
+
+<pre id="pre2">
+    <code class="language-javascript">span.keyword {
+	color: #009688;
+}
+span.bracket {
+	color: #e91e63;
+}
+span.method {
+	color: #DD4A68;
+}
+span.digit {
+	color: #2196f3;
+}
+.code-preview{
+	box-shadow: 0px 1px 13px rgb(0 0 0 / 10%);
+	border-radius: 10px;
+	padding:10px ;
+	position: relative;
+	overflow: auto;
+}
+.code-preview code {
+	color: black;
+}
+
+.string,.string *{
+	color:#d94c20 !important;
+}
+
+span.token {
+	color: #9c27b0;
+}
+code[class*="language-"], pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 12px;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	width: 100%;
+	display: block;
+}
+span.globals {
+	color: #2196f3;
+}
+span.props {
+	color: #673ab7;
+}
+.line-numbers > span:before {
+	content: counter(linenumber);
+	color: #999;
+	display: block;
+	text-align: right;
+	line-height: 18px;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+.line-numbers > span {
+	display: block;
+	counter-increment: linenumber;
+	font-size: 12px;
+	line-height: 18px;
+}
+code[class*="language-"].line-numbers {
+	position: relative;
+	padding-left: 0px;
+	counter-reset: linenumber;
+}
+.line-numbers {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+}
+.code-preview pre {
+	margin: 0;
+	padding-left: 25px;
+	display: flex;
+}
+code[class*="language-"]::selection, code[class*="language-"] ::selection, code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: rgba(141 ,192, 255, 0.32);
+}
+span.selector {
+	color: #750e86;
+}
+span.css-prop {
+	color: #d94c20;
+}
+span.css-value {
+	color: #009688;
+}
+span.css-media {
+	color: #008eff;
+}
+@media screen and (max-width: 100px) {
+	span.css-value {
+		color: #009688;
+	}
+	span.css-media {
+		color: #008eff;
+	}
+}
+</code>
+</pre>
+
+<pre id="pre3">
+    <code class="language-javascript"></code>
+</pre>
+</body>
+<script>
+	function escapeHtml(unsafe) {
+		return unsafe
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
+	}
+	let html = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <link rel="stylesheet" href="event-calender.css">
+ <title>Date Picker</title>
+</head>
+<body>
+<div class="event-calender"></div>
+<div class="event-handle">
+ <div id="calendar-popup">
+  <form id="event-form">
+   <div class="calander_popip_title"><i class="fa fa-calendar" aria-hidden="true"></i>
+    Add Event</div>
+   <a href="#" class="close-event">&times;</a>
+   <ul>
+    <li>
+     <div class="div-divider">
+      <div class="half">
+       <label for="event-start"><i class="fa fa-bell-o" aria-hidden="true"></i>
+        From</label>
+       <input id="event-start" value="12-7-2020" class="form-event-control" type="date" name="start">
+      </div>
+      <div class="half">
+       <label for="event-end"><i class="fa fa-bell-slash" aria-hidden="true"></i>
+        To</label>
+       <input id="event-end" class="form-event-control" type="date" name="end">
+      </div>
+     </div>
+    </li>
+    <li>
+     <div class="div-divider">
+      <div class="half">
+       <label for="event-title"><i class="fa fa-calendar-minus-o" aria-hidden="true"></i>
+        Event Name</label>
+       <input id="event-title" class="form-event-control" placeholder="Event name" type="text" name="title">
+      </div>
+      <div class="half">
+       <label for="event-location"><i class="fa fa-map-marker"  aria-hidden="true"></i>
+        Location</label>
+       <input id="event-location" class="form-event-control" placeholder="Location" type="text" name="location">
+      </div>
+     </div>
+    </li>
+    <li>
+     <label for="event-details"><i class="fa fa-info-circle" aria-hidden="true"></i>
+      Description</label>
+     <textarea id="event-details" rows="3" cols="3" placeholder="Description" class="form-event-control" name="details"></textarea>
+    </li>
+    <div class="button">
+     <button type="button" class="form-event-control submit_btn">Set Event</button>
+    </div>
+   </ul>
+  </form>
+ </div>
+</div>
+</body>
+</html>
+
+`;
+	document.querySelector('#pre3 code').innerHTML = escapeHtml(html)
+</script>
+<script src="syntax.js"></script>
+<script>
+	let syntax = Syntax('#pre')
+	let syntax1 = Syntax('#pre2')
+	let syntax2 = Syntax('#pre3')
+	syntax.js()
+	syntax1.css()
+	syntax2.html()
+</script>
+</html>

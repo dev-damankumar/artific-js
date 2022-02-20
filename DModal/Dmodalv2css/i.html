@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <title>Document</title>
+    <style>
+        @font-face {
+            font-family: SegoeUI Light;
+            src: local("Segoe UI Light"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff2) format("woff2"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.woff) format("woff"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/light/latest.ttf) format("truetype");
+            font-weight: 100;
+        }
+
+        @font-face {
+            font-family: SegoeUI Semi Light;
+            src: local("Segoe UI Semilight"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff2) format("woff2"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.woff) format("woff"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semilight/latest.ttf) format("truetype");
+            font-weight: 200;
+        }
+
+        @font-face {
+            font-family: SegoeUI;
+            src: local("Segoe UI"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff2) format("woff2"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype");
+            font-weight: 400;
+        }
+
+        @font-face {
+            font-family: SegoeUI Bold;
+            src: local("Segoe UI Bold"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff2) format("woff2"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.woff) format("woff"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/bold/latest.ttf) format("truetype");
+            font-weight: 600;
+        }
+
+        @font-face {
+            font-family: SegoeUI Semi Bold;
+            src: local("Segoe UI Semibold"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff2) format("woff2"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.woff) format("woff"),
+            url(//c.s-microsoft.com/static/fonts/segoe-ui/west-european/semibold/latest.ttf) format("truetype");
+            font-weight: 700;
+        }
+
+        * {
+            font-family: "SegoeUI", sans-serif;
+            box-sizing: border-box;
+            outline: none !important;
+        }
+
+    </style>
+    <style>
+        .dModal, .dModal * {
+            transition: all .5s ease;
+        }
+
+        .dModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000bf;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dModal.dModal-full .dModal-content {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 0;
+        }
+
+        .dModal-header h3 svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .dModal-content {
+            background: white;
+            max-width: 768px;
+            max-height: 90%;
+            width: 80%;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: unset;
+            align-items: unset;
+            position: relative;
+        }
+
+        .dModal-content.dModal-sm-content .dModal-header {
+            padding: 15px;
+        }
+
+        .dModal-content.dModal-xs-content .dModal-header {
+            padding: 15px;
+        }
+
+
+        .dModal-header * {
+            margin: 0;
+        }
+
+
+        .dModal-close {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+            font-size: 25px;
+            line-height: 0;
+            padding-bottom: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .shake {
+            animation: shake .5s ease;
+        }
+
+        .dModal-show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dModal-header {
+            padding: 15px 20px;
+            position: relative;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .dModal-body {
+            padding: 10px 20px;
+            flex: 1;
+            font-size: 16px;
+            overflow: auto;
+        }
+
+        .dModal-header h3 img {
+            width: 25px;
+            height: auto;
+            object-fit: contain;
+            margin-right: 13px;
+        }
+
+        .dModal-header h3 {
+            margin-right: 13px;
+            display: flex;
+            align-content: center;
+        }
+
+        .dModal-body p.error {
+            margin: 0px;
+            color: red;
+            background: #ffebeb;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .dModal-header h3 i {
+            margin-right: 10px;
+        }
+
+        .dModal-header h3 {
+            display: flex;
+            align-items: center;
+        }
+
+        .dModal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .d-modal-button-div button {
+            margin-left: 8px;
+        }
+
+        .dModal-body::-webkit-scrollbar-track {
+            background: #e9ecef;
+        }
+
+        .dModal-body::-webkit-scrollbar-thumb {
+            background: #1074e7;
+            border-radius: 50px;
+        }
+
+
+        .dModal-body, .dModal-body * {
+            color: #3a3e41;
+        }
+
+        .dModal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .dModal-footer > * {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .dModal-header * {
+            color: #4c535a;
+        }
+
+        .dModal-footer p {
+            color: #4c535a;
+        }
+
+        .dModal-header h1, .dModal-header h2, .dModal-header h3, .dModal-header h4, .dModal-header h5, .dModal-header h6,
+        .dModal-footer h1, .dModal-footer h2, .dModal-footer h3, .dModal-footer h4, .dModal-footer h5, .dModal-footer h6 {
+            font-size: 17px;
+            font-family: SegoeUI Semi Bold, sans-serif !important;
+            font-weight: bold;
+            color: #4c535a;
+        }
+
+        .d-modal-button-div {
+            text-align: right;
+        }
+
+        .dModal-footer button {
+            font-family: SegoeUI Semi Bold, sans-serif !important;
+        }
+
+        .dModal-bottom {
+            align-items: flex-end;
+        }
+
+        .dModal-bottom .dModal-content {
+            width: 100%;
+            max-width: 100%;
+        }
+
+
+        .dModal-content.dModal-sm-content .dModal-footer, .dModal-content.dModal-xs-content .dModal-footer {
+            padding: 13px 15px;
+        }
+
+        .dModal-content.dModal-sm-content .dModal-body, .dModal-content.dModal-xs-content .dModal-body {
+            padding: 10px 15px;
+            overflow: auto;
+        }
+
+
+        .dModal-content.dModal-sm-content .dModal-close, .dModal-content.dModal-xs-content .dModal-close {
+            right: 15px;
+        }
+
+        .dModal-bottom.dModal-show .dModal-content {
+            position: relative;
+            bottom: 0px;
+        }
+
+        .dModal-bottom .dModal-content {
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            bottom: -100vh;
+            top: unset;
+            transform: none;
+            left: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .dModal-left {
+            justify-content: flex-start;
+        }
+
+        .dModal-left .dModal-content {
+            height: 100%;
+            max-height: 100%;
+            width: 40%;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .dModal.dModal-left .dModal-content {
+            left: -100vh;
+        }
+
+        .dModal.dModal-left.dModal-show .dModal-content {
+            left: 0;
+        }
+
+        .dModal-right {
+            justify-content: flex-end;
+        }
+
+        .dModal-right .dModal-content {
+            height: 100%;
+            max-height: 100%;
+            width: 40%;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .dModal.dModal-right .dModal-content {
+            right: -100vh;
+        }
+
+        .dModal.dModal-right.dModal-show .dModal-content {
+            right: 0;
+        }
+
+        .dModal-top {
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .dModal-top .dModal-content {
+            border-radius: 0 0 10px 10px;
+            top: -100vh;
+        }
+
+        .dModal-top.dModal-show .dModal-content {
+            top: 0;
+        }
+
+        .dModal-top .dModal-content {
+            width: 100%;
+            max-width: 100%;
+        }
+
+
+        .dModal-content.dModal-sm-content {
+            width: 500px;
+            height: auto;
+            max-width: 500px;
+            max-height: 360px;
+        }
+
+        .dModal-content.dModal-xs-content {
+            width: 300px;
+            height: auto;
+            max-width: 300px;
+            max-height: 360px;
+        }
+
+        .dModal-content.dModal-md-content {
+            width: 640px;
+            max-width: 700px;
+            max-height: 460px;
+        }
+
+
+        @media screen and (max-width: 992px) {
+            .dModal-content {
+                max-width: 568px;
+                max-height: 80%;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .dModal-content {
+                width: 90%;
+                max-width: 90%;
+            }
+
+            .dModal-content.dModal-md-content {
+                width: 500px;
+                max-width: 500px;
+                max-height: 360px;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .dModal-content.dModal-md-content {
+                width: 80%;
+                max-width: 80%;
+                max-height: 300px;
+            }
+
+            .dModal-bottom .dModal-content.dModal-md-content {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .dModal-bottom .dModal-content.dModal-sm-content {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .dModal-content.dModal-sm-content {
+                width: 90%;
+                max-width: 90%;
+                max-height: 260px;
+            }
+
+            .dModal-bottom .dModal-content.dModal-xs-content {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .dModal-body {
+                font-size: 15px;
+                padding: 10px;
+            }
+
+            .dModal-close {
+                right: 10px;
+            }
+
+            .dModal-header {
+                padding: 10px;
+            }
+
+            .dModal-header h1, .dModal-header h2, .dModal-header h3, .dModal-header h4, .dModal-header h5, .dModal-header h6 {
+                font-size: 17px;
+                font-weight: 500;
+                font-family: SegoeUI Semi Bold, sans-serif !important;
+            }
+
+
+            .dModal-footer {
+                padding: 10px;
+                border-top: 1px solid #e9ecef;
+            }
+        }
+
+
+        @media screen and (max-width: 500px) {
+            .dModal-content {
+                max-width: 95%;
+                width: 95%;
+            }
+
+            .dModal-content p.confirm-msg {
+                font-size: 14px;
+                margin: 0 !important;;
+            }
+
+            .dModal-content.dModal-sm-content .dModal-header {
+                padding: 8px 10px;
+            }
+
+            .dModal-content.dModal-xs-content .dModal-header {
+                padding: 8px 10px;
+            }
+
+            .dModal-content.dModal-md-content {
+                width: 90%;
+                max-width: 90%;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dModal dModal-show">
+    <div class="dModal-content dModal-sm-content dModal-xs-content" data-modal-content="sm">
+        <div class="dModal-header">
+            <h3>
+                <i class="bx bxs-trash"></i> Delete Project
+            </h3>
+            <span class="dModal-close" data-modal-destroy="">×</span>
+        </div>
+        <div class="dModal-body">
+            <p class="confirm-msg">Are you sure you want delete this project permanatly?</p>
+        </div>
+        <div class="dModal-footer">
+            <div class="d-modal-button-div">
+                <button type="button" class="btn btn-small btn-primary">Delete</button>
+                <button class="btn btn-small btn-dark" type="reset" data-modal-close="">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -12,6 +12,14 @@ var DOM = {
         div.innerHTML = str;
         return div.firstChild
     },
+	importAttributes:function (el) {
+		var div=document.createElement("div");
+		var html=""
+		div.append(el.cloneNode(true))
+		html=div.innerHTML
+		html=html.split(/^\<\w*\s|\w\>/gm)[1]
+		return html
+	},
     getString: function (node) {
         var div = document.createElement("div");
         div.appendChild(node)
