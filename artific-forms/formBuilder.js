@@ -28,7 +28,7 @@
         el: "select",
         config: {
             type: "select",
-            placeholder: "Select options",
+            placeholder: "artific-select options",
             name: "select",
             id: "select",
             value: "option 2"

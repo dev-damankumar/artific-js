@@ -107,7 +107,6 @@ const DSelect = (function () {
 			}
 			if (element.firstElementChild) {
 				if (element.firstElementChild.children.length > 0) {
-					console.log(element.firstElementChild.children)
 					console.error(`"${contentType}-content" element should not have any descendent`)
 					return {error: true, contentType}
 				}
@@ -221,10 +220,15 @@ const DSelect = (function () {
 				styleThemeClasses += userStyleObj[styleStr].toString().trim() + " "
 			}
 		}
-		
-		if (!(styleTheme && typeof styleTheme === "object" && Object.keys(styleTheme).length > 0)) {
-			return console.error("styleTheme must be an object")
+		if(styleTheme){
+			if (!(styleTheme && typeof styleTheme === "object" && Object.keys(styleTheme).length > 0)) {
+				return console.error("styleTheme must be an object")
+			}
+		}else{
+			styleTheme={}
 		}
+
+
 		applyTheme("theme", theme, styleTheme)
 		applyTheme("style", styleView, styleTheme)
 		return styleThemeClasses
@@ -333,7 +337,6 @@ const DSelect = (function () {
 						
 						var beforeIcon = select.getAttribute("before-content")
 						var afterIcon = select.getAttribute("after-content")
-						console.log(beforeIcon)
 						select.removeAttribute("before-content")
 						select.removeAttribute("after-content")
 						var beforeEL = getHTML(beforeIcon)
@@ -388,7 +391,6 @@ const DSelect = (function () {
 		}
 		
 		window.addEventListener("click", (e) => {
-			console.log("yo")
 			let selectDiv = e.target.closest(".select-div") || e.target.classList.contains("select-div")
 			if (e.target.tagName.toUpperCase() !== "SELECT") {
 				if ((e.target.closest(".select-div") || e.target.classList.contains("select-div"))
@@ -450,7 +452,6 @@ const DSelect = (function () {
 										selectDiv.querySelector("select").options[optionSelectedIndex].selected = false
 									}
 									if (multipleArray[uniqueId].length === 0) {
-										console.log(multiple)
 										option.parentElement.parentElement.previousElementSibling.innerHTML = "<span class='default-span'>Choose Option</span>"
 									}
 								}
@@ -875,7 +876,6 @@ const DSelect = (function () {
 	
 	return function instance(sel) {
 		let select = new Constructor(sel)
-		console.log(select)
 		return select
 	}
 })()

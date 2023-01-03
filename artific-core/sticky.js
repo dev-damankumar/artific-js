@@ -45,4 +45,4 @@ HTMLElement.prototype.sticky = function(distance,footer=false){
     })
 
 };
-document.getElementsByClassName("main-sidebar")[0].sticky(10,document.querySelector("footer"))
+// document.getElementsByClassName("main-sidebar")[0].sticky(10,document.querySelector("footer"))

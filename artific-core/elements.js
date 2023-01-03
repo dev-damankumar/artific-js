@@ -1,4 +1,4 @@
-/*var $elements={
+/*let $elements={
 	"div":{
 		className:"container",
 		"data-ref":"hello",
@@ -23,7 +23,7 @@
 			}
 		]
 	}
-}*//*var $elements={
+}*//*let $elements={
 	"div":{
 		className:"container",
 		"data-ref":"hello",
@@ -51,7 +51,7 @@
 }*/
 function elements(obj) {
 	for(let el of Object.keys(obj)){
-		var elm=document.createElement(el)
+		let elm=document.createElement(el)
 		for(let attr of Object.keys(obj[el])){
 			let childs=[];
 			if(attr==="children"){

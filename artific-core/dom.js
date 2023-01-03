@@ -1,4 +1,4 @@
-var DOM = {
+const DOM = {
     isElement: function (obj) {
         try {
             return obj instanceof HTMLElement;
@@ -8,30 +8,30 @@ var DOM = {
         }
     },
     getHTML: function (str) {
-        var div = document.createElement("div");
+        const div = document.createElement("div");
         div.innerHTML = str;
         return div.firstChild
     },
 	importAttributes:function (el) {
-		var div=document.createElement("div");
-		var html=""
+		const div=document.createElement("div");
+		let html=""
 		div.append(el.cloneNode(true))
 		html=div.innerHTML
 		html=html.split(/^\<\w*\s|\w\>/gm)[1]
 		return html
 	},
     getString: function (node) {
-        var div = document.createElement("div");
+        const div = document.createElement("div");
         div.appendChild(node)
         return div.innerHTML
     },
     getStyle: function (el, prop) {
-        var element = el;
+        const element = el;
         if (element === undefined || element.length <= 0) {
             return console.error("No HTML Element Found")
         }
-        var arr = new Map();
-        if (element.length == undefined) {
+        let arr = new Map();
+        if (element.length === undefined) {
             getProp(element)
         } else {
             [].slice.call(element).forEach(v => {
@@ -40,9 +40,8 @@ var DOM = {
         }
 
         function getProp(el) {
-            var style = window.getComputedStyle(el, null).getPropertyValue(prop);
-            if (element.length == undefined) {
-                console.log(el)
+            const style = window.getComputedStyle(el, null).getPropertyValue(prop);
+            if (element.length === undefined) {
                 arr = style
             } else {
                 arr.set(el, style)
@@ -56,8 +55,7 @@ var DOM = {
         if (element === undefined || element.length <= 0) {
             return console.error("No HTML Element Found")
         }
-        console.log(element)
-        if (element.length == undefined) {
+        if (element.length === undefined) {
             setAttr(element)
         } else {
             [].slice.call(element).forEach(v => {
@@ -66,11 +64,11 @@ var DOM = {
         }
 
         function setAttr(el) {
-            var attributes = obj
+            let attributes = obj
             for (let attrKeys of Object.keys(attributes)) {
-                if (attrKeys == "class") {
+                if (attrKeys === "class") {
                     classArr = attributes[attrKeys].trim().split(" ")
-                    for (var i = 0; i < classArr.length; i++) {
+                    for (let i = 0; i < classArr.length; i++) {
                         if (classArr[i] !== "") {
                             el.classList.add(classArr[i].trim())
                         }
@@ -87,7 +85,7 @@ var DOM = {
             return console.error("No HTML Element Found")
         }
         let crateElm = (sourceEl) => {
-            var element = document.createElement(name);
+            const element = document.createElement(name);
             if (attributes !== "") {
                 if (typeof (attributes) === "object") {
                     this.setAttributes(element, attributes)
@@ -112,7 +110,7 @@ var DOM = {
                 console.error("Invalid mergeAt Value You must enter 'beforeend' | 'afterend' | 'afterbegin' | 'beforebegin'")
             }
         }
-        if (source.length == undefined) {
+        if (source.length === undefined) {
             crateElm(source)
         } else {
             [].slice.call(source).forEach(v => {
@@ -121,13 +119,13 @@ var DOM = {
         }
     },
     hasStyle: function (el, prop) {
-        var element = el
+        const element = el
         if (element === undefined || element.length <= 0) {
             return console.error("No HTML Element Found")
         }
 
-        var arr = new Map();
-        if (element.length == undefined) {
+        let arr = new Map();
+        if (element.length === undefined) {
             getProp(element)
         } else {
             [].slice.call(element).forEach(v => {
@@ -136,21 +134,12 @@ var DOM = {
         }
 
         function getProp(el) {
-            var style = el.style
+            let style = el.style
             if (style) {
-                if (element.length == undefined) {
-                    if (style[prop] === "") {
-                        arr = false
-                    } else {
-                        arr = true
-                    }
+                if (element.length === undefined) {
+                    arr=style[prop]!=="";
                 } else {
-                    console.log(style[prop])
-                    if (style[prop] === "") {
-                        arr.set(el, false)
-                    } else {
-                        arr.set(el, true)
-                    }
+                    arr.set(el, !!style[prop])
                 }
             }
         }
@@ -159,20 +148,19 @@ var DOM = {
 
     },
     importStyle: function (el, asArray = false) {
-        var element = el
+        const element = el
         if (element === undefined || element.length <= 0) {
             return console.error("No HTML Element Found")
         }
-        var array;
+        let array;
         if (asArray === true) {
             array = []
         } else {
             array = new Map()
         }
 
-        var obj = {};
-        var o = {};
-        if (element.length == undefined) {
+        let obj = {};
+        if (element.length === undefined) {
             getStyle(element)
         } else {
             [].slice.call(element).forEach(v => {
@@ -181,19 +169,16 @@ var DOM = {
         }
 
         function getStyle(el) {
-            var style = el.getAttribute("style")
+            const style = el.getAttribute("style")
             if (style) {
-                var rule = style.split(";")
+                const rule = style.split(";")
                 obj = {}
                 rule.forEach(v => {
                     let arr = v.trim().split(":");
                     obj[arr[0].trim()] = arr[1].trim()
                 })
 
-                if (element.length == undefined) {
-                    console.log("in")
-                    obj = obj;
-                } else {
+                if (element.length !== undefined) {
                     if (asArray === true) {
                         array.push(obj)
                     } else {
@@ -204,24 +189,23 @@ var DOM = {
         }
 
         if (array.length <= 0 || array.size <= 0) {
-
             return obj
         } else {
             return array
         }
     },
     importClass: function (el, asArray = false) {
-        var element = el;
+        const element = el;
         if (element === undefined || element.length <= 0) {
             return console.error("No HTML Element Found")
         }
-        var array;
+        let array;
         if (asArray === true) {
             array = []
         } else {
             array = new Map()
         }
-        if (element.length == undefined) {
+        if (element.length === undefined) {
             getStyle(element)
         } else {
             [].slice.call(element).forEach(v => {
@@ -230,15 +214,13 @@ var DOM = {
         }
 
         function getStyle(el) {
-            var classes = el.getAttribute("class")
-            console.log(classes)
+            const classes = el.getAttribute("class")
             if (classes) {
-                var rule = classes.split(" ")
-                if (element.length == undefined) {
+                const rule = classes.split(" ")
+                if (element.length === undefined) {
                     array = rule;
                 } else {
                     if (asArray === true) {
-
                         array.push(rule)
                     } else {
                         array.set(el, rule)
@@ -270,7 +252,7 @@ var DOM = {
             <p class="DOM-msg ${!subMsg ? 'DOM-no-sub-msg' : ''}">${msg}</p>
         `, {class: "DOM-div DOM-error-div"})
 
-        var DOMClose = document.querySelector(".DOM-close");
+        let DOMClose = document.querySelector(".DOM-close");
         DOMClose.addEventListener("click", function () {
             this.closest(".DOM-div").classList.add("DOM-remove")
             setTimeout(() => {
@@ -300,7 +282,7 @@ var DOM = {
         `, {class: "DOM-div DOM-success-div"})
 
 
-        var DOMClose = document.querySelector(".DOM-close");
+        let DOMClose = document.querySelector(".DOM-close");
         DOMClose.addEventListener("click", function () {
             this.closest(".DOM-div").classList.add("DOM-remove")
             setTimeout(() => {
@@ -309,7 +291,7 @@ var DOM = {
         })
     },
     alertUI: function (message) {
-        var divParent = document.createElement("div");
+        let divParent = document.createElement("div");
         let style = this.createElement("style", document.querySelector("head"), "beforeend",
             `
             .alert-parent{position:fixed;top:0;left:0;right:0;bottom:0;display:none;width:100%;height:100%;background:#7171717d;z-index:999999;user-select:none}.alert-parent .alertUi{position:relative;top:15px;left:50%;transform:translate(-50%,0);min-width:400px;width:100%;max-width:400px;height:auto;padding:15px;border-radius:5px;min-height:150px;background:#fff;box-shadow:0 4px 8px 0 rgba(0,0,0,.2)}.alert-parent .alertUi p{margin-top:0;font-size:17px;font-family:monospace}button.alert-btn{position:absolute;bottom:15px;right:15px;border:none;background:#9c27b0;color:#fff;padding:10px 20px;border-radius:5px;cursor:pointer}button.ok-btn{position:absolute;right:110px;border:none;background:#ff5722;padding:10px 20px;border-radius:5px;color:#fff;border:1px solid #ff5722;bottom:15px}button.cancel-btn{position:absolute;right:15px;border:none;background:#fff;padding:10px 20px;border-radius:5px;color:#ff5722;border:1px solid #ff5722;bottom:15px}@media screen and (max-width:600px){.alert-parent .alertUi{position:relative;top:50%;left:50%;transform:translate(-50%,-50%);min-width:90%;width:100%;max-width:90%;height:auto;padding:15px;border-radius:5px;min-height:150px;background:#fff;box-shadow:0 4px 8px 0 rgba(0,0,0,.2)}}
@@ -318,11 +300,11 @@ var DOM = {
         document.body.onload = function () {
             divParent.style.display = "block"
         }
-        var alertUi = document.createElement("div");
+        let alertUi = document.createElement("div");
         alertUi.className = "alertUi";
         alertUi.innerHTML = `<p>${location.host} Says</p> <p>${message}</p>`
         divParent.append(alertUi)
-        var btn = document.createElement("button");
+        let btn = document.createElement("button");
         btn.className = "alert-btn";
         btn.innerText = "OK"
         btn.onclick = function () {
@@ -334,12 +316,12 @@ var DOM = {
     defineClass: function (className, properties) {
         console.log(properties.constructor.name)
         if (typeof className === "string" && (typeof properties === "object" || properties.constructor.name === "Object")) {
-            var dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
-            var styleTag = document.querySelector("[data-class]")
+            let dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
+            let styleTag = document.querySelector("[data-class]")
             if (styleTag && styleTag.tagName === "STYLE") {
                 styleTag.innerHTML += dClass
             } else {
-                var style = document.createElement("style");
+                let style = document.createElement("style");
                 style.setAttribute("data-class", "true")
                 style.innerHTML += dClass
                 document.head.append(style)
@@ -352,19 +334,19 @@ var DOM = {
     },
     defineClasses: function (classArr) {
         if (Array.isArray(classArr) || classArr.constructor.name === "Array") {
-            var classArray = []
+            let classArray = []
             classArr.forEach(arr => {
                 if (arr.length === 2) {
-                    var className = arr[0]
-                    var properties = arr[1]
-                    var dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
-                    var styleTag = document.querySelector("[data-class]")
+                    let className = arr[0]
+                    let properties = arr[1]
+                    let dClass = (`${className}  ${JSON.stringify(properties).replace(/"/gm, "").replace(/,/gm, ";")}`)
+                    let styleTag = document.querySelector("[data-class]")
 
                     if (styleTag && styleTag.tagName === "STYLE") {
                         styleTag.innerHTML += dClass
                         classArray.push(dClass)
                     } else {
-                        var style = document.createElement("style");
+                        let style = document.createElement("style");
                         style.setAttribute("data-class", "true")
                         style.innerHTML += dClass
                         document.head.append(style)
@@ -382,9 +364,9 @@ var DOM = {
 
     },
     includeHTML: function () {
-        var includesHTML = [...document.querySelectorAll("include")]
+        let includesHTML = [...document.querySelectorAll("include")]
         includesHTML.forEach(v => {
-            var src = v.dataset.src
+            let src = v.dataset.src
             fetch(src).then(res => {
                 res.text().then(html => {
                     v.insertAdjacentHTML("afterend", html)
@@ -397,7 +379,7 @@ var DOM = {
         if (typeof obj !== "object" || obj.constructor.name !== "Object") return console.error("argument must be of type object")
         if (typeof (obj) === 'string') return data;
         let queryString = []
-        for (var [key, value] of Object.entries(obj)) {
+        for (let [key, value] of Object.entries(obj)) {
             queryString.push(`${key}=${value}`)
         }
         console.log(queryString.join("&"))
@@ -407,16 +389,16 @@ var DOM = {
         return Array.prototype.slice.call(parent.querySelectorAll(selector))
     },
     decodeHTML: function (html) {
-        var txt = document.createElement('textarea');
+        const txt = document.createElement('textarea');
         txt.innerHTML = html;
         return txt.value;
     },
     getParams: function (queryString) {
-        var query = queryString.split("?")[1]
-        var queryArray = query.split("&")
-        var params = {}
-        for (var i = 0; i < queryArray.length; i++) {
-            var a = queryArray[i].split("=")
+        const query = queryString.split("?")[1]
+        const queryArray = query.split("&")
+        const params = {}
+        for (let i = 0; i < queryArray.length; i++) {
+            const a = queryArray[i].split("=")
             params[decodeURIComponent(a[0])] = decodeURIComponent(a[1])
         }
         return params
@@ -431,7 +413,7 @@ var DOM = {
         return parents
     },
     isVisible: function (elem) {
-        var distance = elem.getBoundingClientRect();
+        const distance = elem.getBoundingClientRect();
         return (
             distance.top >= 0 &&
             distance.left >= 0 &&
@@ -440,8 +422,8 @@ var DOM = {
         );
     },
     isOutOfViewport: function (elem) {
-        var bounding = elem.getBoundingClientRect();
-        var out = {};
+        const bounding = elem.getBoundingClientRect();
+        const out = {};
         out.top = bounding.top < 0;
         out.left = bounding.left < 0;
         out.bottom = bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
@@ -454,21 +436,21 @@ var DOM = {
         return Array.prototype.slice.call(document.querySelectorAll(`${selector} *`))
     },
     importCss: function (filename, as) {
-        var obj = {}
+        const obj = {}
 
         function getStyleSheet(unique_title) {
-            for (var i = 0; i < document.styleSheets.length; i++) {
-                var sheet = document.styleSheets[i];
-                if (sheet.title == unique_title) {
+            for (let i = 0; i < document.styleSheets.length; i++) {
+                const sheet = document.styleSheets[i];
+                if (sheet.title === unique_title) {
                     return sheet.rules;
                 }
             }
         }
 
         function uniqueid() {
-            var idstr = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
+            let idstr = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
             do {
-                var ascicode = Math.floor((Math.random() * 42) + 48);
+                let ascicode = Math.floor((Math.random() * 42) + 48);
                 if (ascicode < 58 || ascicode > 64) {
                     idstr += String.fromCharCode(ascicode);
                 }
@@ -480,14 +462,14 @@ var DOM = {
             const result = text.match(/{([^}]+)}/g)
                 .map(res => res.replace(/{|}/g, ''))[0]
             const ruleArray = result.split(";")
-            var styleArray = ruleArray.filter(v => {
+            let styleArray = ruleArray.filter(v => {
                 let t = v.replace(/\s/g, '').length
                 if (t.length !== 1) {
                     return t
                 }
             })
             styleArray.forEach(styleArr => {
-                [property, value] = styleArr.split(":")
+               let [property, value] = styleArr.split(":")
                 property = property.replace(/"/g, "").trim()
                 value = value.replace(/"/g, "").trim()
                 temp[property] = value
@@ -496,22 +478,22 @@ var DOM = {
 
         return fetch(filename.toString().trim()).then(res => {
             return res.text().then(data => {
-                var textCss = data
-                var style = document.createElement("style")
+                let textCss = data
+                let style = document.createElement("style")
                 style.innerHTML = textCss
-                var unique_id = uniqueid()
+                let unique_id = uniqueid()
                 style.title = unique_id
-                var fontIndex = 0
-                var ruleIndex = 0
-                var keyIndex = 0
-                var supportIndex = 0
-                var mediaIndex = 0
+                let fontIndex = 0
+                let ruleIndex = 0
+                let keyIndex = 0
+                let supportIndex = 0
+                let mediaIndex = 0
 
                 document.head.append(style)
-                var styleRawArray = [...getStyleSheet(unique_id)]
+                let styleRawArray = [...getStyleSheet(unique_id)]
                 style.remove()
                 styleRawArray.forEach(v => {
-                    var tempObj = {}
+                    let tempObj = {}
                     if (v.type === 3) {
                         tempObj[v.href] = v.cssText.replace(/"/g, "'")
                         if (!obj["@import"]) {
@@ -522,9 +504,9 @@ var DOM = {
                         }
                     } else if (v.type === 4) {
                         let text = ""
-                        var cssRule = [...v.cssRules]
+                        let cssRule = [...v.cssRules]
                         cssRule.forEach(v => {
-                            var tempMedia = {}
+                            let tempMedia = {}
                             text = v.cssText
                             sanitizeStyleRules(text, tempMedia)
                             if (v.selectorText in tempObj) {
@@ -544,11 +526,11 @@ var DOM = {
                             obj[`@media ${v.media[0]}`] = tempObj
                         }
                     } else if (v.type === 7) {
-                        var keyArray = v
+                        let keyArray = v
                         for (const key in keyArray) {
                             if (!isNaN(parseInt(key))) {
-                                var tempMedia = {}
-                                var cssRule = keyArray[key]
+                                let tempMedia = {}
+                                let cssRule = keyArray[key]
                                 text = cssRule.cssText
                                 sanitizeStyleRules(text, tempMedia)
 
@@ -569,9 +551,9 @@ var DOM = {
 
                     } else if (v.type === 12) {
                         let text = ""
-                        var cssRule = [...v.cssRules]
+                        let cssRule = [...v.cssRules]
                         cssRule.forEach(v => {
-                            var tempMedia = {}
+                            let tempMedia = {}
                             text = v.cssText
                             sanitizeStyleRules(text, tempMedia)
 
@@ -591,7 +573,7 @@ var DOM = {
                             obj[`@supports ${v.conditionText}`] = tempObj
                         }
                     } else {
-                        var text = v.cssText
+                        let text = v.cssText
                         sanitizeStyleRules(text, tempObj)
                         if (v.type === 1) {
                             if (v.selectorText in obj) {
@@ -628,7 +610,7 @@ var DOM = {
         return el.children.length
     },
     generateId: function () {
-        var S4 = function () {
+        let S4 = function () {
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
         };
         return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
@@ -641,7 +623,7 @@ var DOM = {
     each: function (iterable, cb) {
         if(!iterable) return
         if (typeof iterable === "object" && iterable.constructor === Object) {
-            var itr = Object.keys(iterable)
+            let itr = Object.keys(iterable)
             itr.forEach((v, i) => {
                 cb(v, iterable[v], iterable)
             })
@@ -653,8 +635,8 @@ var DOM = {
             })
         }
         else{
-            var arrayEl=iterable
-            for (var i=0;i<arrayEl.length;i++){
+            let arrayEl=iterable
+            for (let i=0;i<arrayEl.length;i++){
                 cb(arrayEl[i],i,arrayEl)
             }
         }
@@ -669,7 +651,7 @@ var DOM = {
             } else if (c < 0) {
                 c = 0;
             }
-            var hex = c.toString(16);
+            let hex = c.toString(16);
             return hex.length === 1 ? "0" + hex : hex;
         }
 
@@ -681,13 +663,13 @@ var DOM = {
         b = b.toString(16);
         a = Math.round(a * 255).toString(16);
 
-        if (r.length == 1)
+        if (r.length === 1)
             r = "0" + r;
-        if (g.length == 1)
+        if (g.length === 1)
             g = "0" + g;
-        if (b.length == 1)
+        if (b.length === 1)
             b = "0" + b;
-        if (a.length == 1)
+        if (a.length === 1)
             a = "0" + a;
 
         return "#" + r + g + b + a;
@@ -703,11 +685,11 @@ var DOM = {
             h = 0,
             s = 0,
             l = 0;
-        if (delta == 0) {
+        if (delta === 0) {
             h = 0;
-        } else if (cmax == r) {
+        } else if (cmax === r) {
             h = ((g - b) / delta) % 6;
-        } else if (cmax == g) {
+        } else if (cmax === g) {
             h = (b - r) / delta + 2;
         } else {
             h = (r - g) / delta + 4;
@@ -723,7 +705,7 @@ var DOM = {
         l = (cmax + cmin) / 2;
 
 
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
 
 
         s = +(s * 100).toFixed(1);
@@ -742,11 +724,11 @@ var DOM = {
             h = 0,
             s = 0,
             l = 0;
-        if (delta == 0) {
+        if (delta === 0) {
             h = 0;
-        } else if (cmax == r) {
+        } else if (cmax === r) {
             h = ((g - b) / delta) % 6;
-        } else if (cmax == g) {
+        } else if (cmax === g) {
             h = (b - r) / delta + 2;
         } else {
             h = (r - g) / delta + 4;
@@ -762,7 +744,7 @@ var DOM = {
         l = (cmax + cmin) / 2;
 
 
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
 
 
         s = +(s * 100).toFixed(1);
@@ -771,12 +753,12 @@ var DOM = {
         return "hsl(" + h + "," + s + "%," + l + "%," + a + ")";
     },
     hexToRgb: function (hex) {
-        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
         hex = hex.replace(shorthandRegex, function (m, r, g, b) {
             return r + r + g + g + b + b;
         });
 
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? `rgb(${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)})` : null;
     },
     hexToRgba: function (hex, alpha) {
@@ -814,11 +796,11 @@ var DOM = {
     hexToHsl: function (H) {
         // Convert hex to RGB first
         let r = 0, g = 0, b = 0;
-        if (H.length == 4) {
+        if (H.length === 4) {
             r = "0x" + H[1] + H[1];
             g = "0x" + H[2] + H[2];
             b = "0x" + H[3] + H[3];
-        } else if (H.length == 7) {
+        } else if (H.length === 7) {
             r = "0x" + H[1] + H[2];
             g = "0x" + H[3] + H[4];
             b = "0x" + H[5] + H[6];
@@ -834,11 +816,11 @@ var DOM = {
             s = 0,
             l = 0;
 
-        if (delta == 0)
+        if (delta === 0)
             h = 0;
-        else if (cmax == r)
+        else if (cmax === r)
             h = ((g - b) / delta) % 6;
-        else if (cmax == g)
+        else if (cmax === g)
             h = (b - r) / delta + 2;
         else
             h = (r - g) / delta + 4;
@@ -849,7 +831,7 @@ var DOM = {
             h += 360;
 
         l = (cmax + cmin) / 2;
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
         s = +(s * 100).toFixed(1);
         l = +(l * 100).toFixed(1);
 
@@ -858,22 +840,22 @@ var DOM = {
     hexToHsla: function (H) {
         let r = 0, g = 0, b = 0, a = 1;
 
-        if (H.length == 5) {
+        if (H.length === 5) {
             r = "0x" + H[1] + H[1];
             g = "0x" + H[2] + H[2];
             b = "0x" + H[3] + H[3];
             a = "0x" + H[4] + H[4];
-        } else if (H.length == 9) {
+        } else if (H.length === 9) {
             r = "0x" + H[1] + H[2];
             g = "0x" + H[3] + H[4];
             b = "0x" + H[5] + H[6];
             a = "0x" + H[7] + H[8];
-        } else if (H.length == 7) {
+        } else if (H.length === 7) {
             r = "0x" + H[1] + H[2];
             g = "0x" + H[3] + H[4];
             b = "0x" + H[5] + H[6];
             a = "0x" + "f" + "f";
-        } else if (H.length == 4) {
+        } else if (H.length === 4) {
             r = "0x" + H[1] + H[1];
             g = "0x" + H[2] + H[2];
             b = "0x" + H[3] + H[3];
@@ -891,11 +873,11 @@ var DOM = {
             s = 0,
             l = 0;
 
-        if (delta == 0)
+        if (delta === 0)
             h = 0;
-        else if (cmax == r)
+        else if (cmax === r)
             h = ((g - b) / delta) % 6;
-        else if (cmax == g)
+        else if (cmax === g)
             h = (b - r) / delta + 2;
         else
             h = (r - g) / delta + 4;
@@ -906,7 +888,7 @@ var DOM = {
             h += 360;
 
         l = (cmax + cmin) / 2;
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
         s = +(s * 100).toFixed(1);
         l = +(l * 100).toFixed(1);
 
@@ -963,11 +945,11 @@ var DOM = {
         b = Math.round((b + m) * 255).toString(16);
 
         // Prepend 0s, if necessary
-        if (r.length == 1)
+        if (r.length === 1)
             r = "0" + r;
-        if (g.length == 1)
+        if (g.length === 1)
             g = "0" + g;
-        if (b.length == 1)
+        if (b.length === 1)
             b = "0" + b;
 
         return "#" + r + g + b;
@@ -1015,13 +997,13 @@ var DOM = {
 
         a = Math.round(a * 255).toString(16);
 
-        if (r.length == 1)
+        if (r.length === 1)
             r = "0" + r;
-        if (g.length == 1)
+        if (g.length === 1)
             g = "0" + g;
-        if (b.length == 1)
+        if (b.length === 1)
             b = "0" + b;
-        if (a.length == 1)
+        if (a.length === 1)
             a = "0" + a;
 
         return "#" + r + g + b + a;
@@ -1134,11 +1116,11 @@ var DOM = {
             g = (+rgb[1]).toString(16),
             b = (+rgb[2]).toString(16);
 
-        if (r.length == 1)
+        if (r.length === 1)
             r = "0" + r;
-        if (g.length == 1)
+        if (g.length === 1)
             g = "0" + g;
-        if (b.length == 1)
+        if (b.length === 1)
             b = "0" + b;
 
         return "#" + r + g + b;
@@ -1165,11 +1147,11 @@ var DOM = {
             s = 0,
             l = 0;
 
-        if (delta == 0)
+        if (delta === 0)
             h = 0;
-        else if (cmax == r)
+        else if (cmax === r)
             h = ((g - b) / delta) % 6;
-        else if (cmax == g)
+        else if (cmax === g)
             h = (b - r) / delta + 2;
         else
             h = (r - g) / delta + 4;
@@ -1180,7 +1162,7 @@ var DOM = {
             h += 360;
 
         l = (cmax + cmin) / 2;
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
         s = +(s * 100).toFixed(1);
         l = +(l * 100).toFixed(1);
 
@@ -1272,7 +1254,7 @@ var DOM = {
         return seconds
     },
     getMeridiem() {
-        var meridium = null
+        let meridium = null
         const formatter = new Intl.DateTimeFormat("en", {hour: "numeric", hour12: true});
         return formatter.format(new Date()).split(" ")[1]
     },
@@ -1319,10 +1301,10 @@ var DOM = {
             return year
         }
 
-        var formatArr = format.split(" ")
-        var isMonthNumeric = false
-        var str = "d m y"
-        var newFormat = {}
+        let formatArr = format.split(" ")
+        let isMonthNumeric = false
+        let str = "d m y"
+        let newFormat = {}
         formatArr.forEach(v => {
             if (v.startsWith("d")) {
                 if (v.length === 2) {
@@ -1356,13 +1338,13 @@ var DOM = {
             }
         })
 
-        var day = getDay(newFormat.date)
-        var month = getMonthName(newFormat.month)
+        let day = getDay(newFormat.date)
+        let month = getMonthName(newFormat.month)
         if (isMonthNumeric) {
             month = getMonthName(newFormat.month)
         }
 
-        var year = getYear(newFormat.year)
+        let year = getYear(newFormat.year)
 
         str = str.replace("d", day)
         str = str.replace("m", month)
@@ -1442,11 +1424,11 @@ var DOM = {
             return seconds
         }
 
-        var formatArr = format.split(" ")
-        var str = "h-m-s-l a"
-        var milli = false
-        var hourFormat = true
-        var newFormat = {}
+        let formatArr = format.split(" ")
+        let str = "h-m-s-l a"
+        let milli = false
+        let hourFormat = true
+        let newFormat = {}
         formatArr.forEach(v => {
             if (v.startsWith("h")) {
                 if (v.length === 2) {
@@ -1484,11 +1466,11 @@ var DOM = {
         })
 
 
-        var hours = getHours(newFormat.hour)
-        var minutes = getMinutes(newFormat.minute)
-        var second = getSeconds(newFormat.second)
-        var milliseconds = ""
-        var meridium = ""
+        let hours = getHours(newFormat.hour)
+        let minutes = getMinutes(newFormat.minute)
+        let second = getSeconds(newFormat.second)
+        let milliseconds = ""
+        let meridium = ""
         const formatter = new Intl.DateTimeFormat("en", {hour: newFormat.hour, hour12: hourFormat});
         let hour = formatter.format(date).split(" ")[1]
         if (hour) {
@@ -1526,16 +1508,16 @@ var DOM = {
             return typeof obj[Symbol.iterator] === 'function';
         }
         function setInfo(el) {
-            var tempObj={}
+            let tempObj={}
 
             tempObj.tagName=el.tagName.toLowerCase()
             tempObj.element=`<${el.tagName.toLowerCase()}>`
             tempObj.hasChildren=!!(el.children.length)
             tempObj.text=el.innerHTML
             tempObj.outerHTML=el.outerHTML
-            var attributes={}
-            var attrs=[...el.attributes]
-            for (var j=0;j<attrs.length;j++){
+            let attributes={}
+            let attrs=[...el.attributes]
+            for (let j=0;j<attrs.length;j++){
                 attributes[attrs[j].nodeName]=attrs[j].nodeValue
             }
             tempObj.attributes=attributes
@@ -1545,13 +1527,13 @@ var DOM = {
             }
             return tempObj
         }
-        var isArray=isIterable(el)
-        var info=[];
+        let isArray=isIterable(el)
+        let info=[];
         if(isArray){
             let array=[...el]
             console.log(array)
 
-            for (var i=0;i<array.length;i++){
+            for (let i=0;i<array.length;i++){
                 info.push(setInfo(array[i]))
             }
 
@@ -1561,7 +1543,7 @@ var DOM = {
         return info
     },
     compare:function (el1,el2) {
-        var diff={}
+        let diff={}
         function isIterable(obj) {
             if (obj == null) return false;
             return typeof obj[Symbol.iterator] === 'function';
@@ -1569,20 +1551,20 @@ var DOM = {
         function check(el1,el2) {
             if(el2.constructor===Object || el1.constructor===Object) return console.error("can't compare objects")
             if(Object.keys(el1.attributes)!==Object.keys(el2.attributes)){
-                var el1data=el1.attributes
-                var el2data=el2.attributes
-                var temp={}
+                let el1data=el1.attributes
+                let el2data=el2.attributes
+                let temp={}
                 if(Object.keys(el1data).length>0){
                     let obj=[...el1data]
                     obj.forEach(v=>{
-                        var key=`${v.name}`
+                        let key=`${v.name}`
                         temp[key]={prev:v.value,next:null}
                     })
                 }
                 if(Object.keys(el2data).length>0){
                     let obj=[...el2data]
                     obj.forEach(v=>{
-                        var key=`${v.name}`
+                        let key=`${v.name}`
                         if(!temp[key]){
                             temp[key]={prev:null}
                         }
@@ -1590,7 +1572,7 @@ var DOM = {
                     })
                 }
 
-                var temparr=Object.keys(temp)
+                let temparr=Object.keys(temp)
                 temparr.forEach(v=>{
                     if(temp[v].prev!==temp[v].next){
                         diff[v]={prev:temp[v].prev,next:temp[v].next}

@@ -1,17 +1,18 @@
 function importCss(filename,as) {
-    var obj = {}
+    const obj={};
+
     function getStyleSheet(unique_title) {
-        for (var i = 0; i < document.styleSheets.length; i++) {
-            var sheet = document.styleSheets[i];
-            if (sheet.title == unique_title) {
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            const sheet=document.styleSheets[i];
+            if (sheet.title === unique_title) {
                 return sheet.rules;
             }
         }
     }
     function uniqueid() {
-        var idstr = String.fromCharCode(Math.floor((Math.random() * 25) + 65));
+        let idstr=String.fromCharCode(Math.floor((Math.random() * 25) + 65));
         do {
-            var ascicode = Math.floor((Math.random() * 42) + 48);
+            const ascicode=Math.floor((Math.random() * 42) + 48);
             if (ascicode < 58 || ascicode > 64) {
                 idstr += String.fromCharCode(ascicode);
             }
@@ -22,12 +23,12 @@ function importCss(filename,as) {
         const result = text.match(/{([^}]+)}/g)
             .map(res => res.replace(/{|}/g, ''))[0]
         const ruleArray = result.split(";")
-        var styleArray = ruleArray.filter(v => {
-            let t = v.replace(/\s/g, '').length
-            if (t.length !== 1) {
+        const styleArray=ruleArray.filter(v => {
+            let t=v.replace(/\s/g, '').length
+            if (t.length!==1) {
                 return t
             }
-        })
+        });
         styleArray.forEach(styleArr => {
             [property, value] = styleArr.split(":")
             property=property.replace(/"/g,"").trim()
@@ -37,22 +38,22 @@ function importCss(filename,as) {
     }
     return fetch(filename.toString().trim()).then(res => {
         return res.text().then(data => {
-            var textCss = data
-            var style = document.createElement("style")
+            const textCss=data;
+            const style=document.createElement("style");
             style.innerHTML = textCss
-            var unique_id = uniqueid()
+            const unique_id=uniqueid();
             style.title = unique_id
-            var fontIndex = 0
-            var ruleIndex = 0
-            var keyIndex = 0
-            var supportIndex = 0
-            var mediaIndex = 0
+            let fontIndex=0;
+            let ruleIndex=0;
+            let keyIndex=0;
+            let supportIndex=0;
+            let mediaIndex=0;
 
             document.head.append(style)
-            var styleRawArray = [...getStyleSheet(unique_id)]
+            const styleRawArray=[...getStyleSheet(unique_id)];
             style.remove()
             styleRawArray.forEach(v => {
-                var tempObj = {}
+                const tempObj={};
                 if (v.type === 3) {
                     tempObj[v.href] = v.cssText.replace(/"/g,"'")
                     if (!obj["@import"]) {
@@ -66,7 +67,7 @@ function importCss(filename,as) {
                     let text = ""
                     var cssRule = [...v.cssRules]
                     cssRule.forEach(v => {
-                        var tempMedia = {}
+                        const tempMedia={};
                         text = v.cssText
                         sanitizeStyleRules(text, tempMedia)
                         if (v.selectorText in tempObj) {
@@ -87,7 +88,7 @@ function importCss(filename,as) {
                     }
                 }
                 else if (v.type === 7) {
-                    var keyArray = v
+                    const keyArray=v;
                     for (const key in keyArray) {
                         if (!isNaN(parseInt(key))) {
                             var tempMedia = {}
@@ -115,7 +116,7 @@ function importCss(filename,as) {
                     let text = ""
                     var cssRule = [...v.cssRules]
                     cssRule.forEach(v => {
-                        var tempMedia = {}
+                        const tempMedia={};
                         text = v.cssText
                         sanitizeStyleRules(text, tempMedia)
 

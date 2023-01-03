@@ -1,6 +1,6 @@
-var $ = (function () {
+const $ = (function () {
     'use strict';
-    var Constructor = function (selector) {
+    const Constructor = function (selector) {
         if (selector === 'document') {
             this.elems = [document];
         } else if (selector === 'window') {
@@ -10,7 +10,7 @@ var $ = (function () {
         }
     };
 
-    var bStyleArray = ["padding", "paddingLeft", "paddingRight", "paddingTop", "paddingBottom",
+    const bStyleArray = ["padding", "paddingLeft", "paddingRight", "paddingTop", "paddingBottom",
         "margin", "marginLeft", "marginRight", "marginTop", "marginBottom", "border", "borderRadius"
         , "borderLeft", "borderRight", "borderTop", "borderBottom", "borderTopLeftRadius", "borderTopRightRadius",
         "borderBottomLeftRadius", "borderBottomRightRadius", "fontSize", "fontWeight", "color", "background",
@@ -47,10 +47,8 @@ var $ = (function () {
         }
     };
 
-    var instantiate = function (selector) {
+    return function (selector) {
         return new Constructor(selector);
     };
-
-    return instantiate;
 
 })();

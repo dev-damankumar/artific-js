@@ -35,10 +35,6 @@ const Syntax = (function () {
 			let functions = /(\w*)\(/g
 			let props = /(\.)(\w*)/g
 			let digit = /(\d+)/g
-			let style = `
-<style>
-</style>`
-			document.head.innerHTML += style
 			this.elements.forEach(el => {
 				let code = el.querySelector('code')
 				let codePreview = document.createElement('div')
